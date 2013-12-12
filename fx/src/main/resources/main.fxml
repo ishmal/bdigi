@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+  <children>
+    <VBox prefHeight="368.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <children>
+        <MenuBar id="" fx:id="menuBar" prefWidth="600.0">
+          <menus>
+            <Menu mnemonicParsing="false" text="File">
+              <items>
+                <MenuItem id="" mnemonicParsing="false" onAction="#doClose" text="Close" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Edit">
+              <items>
+                <MenuItem id="" mnemonicParsing="false" onAction="#doClear" text="Clear" fx:id="clearItem" />
+                <MenuItem mnemonicParsing="false" onAction="#doPreferences" text="Preferences..." />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="View">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#doLog" text="Log" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#doAbout" text="About" />
+              </items>
+            </Menu>
+          </menus>
+        </MenuBar>
+        <AnchorPane id="" fx:id="waterfallBox" prefHeight="121.0" prefWidth="600.0">
+          <VBox.margin>
+            <Insets />
+          </VBox.margin>
+        </AnchorPane>
+        <TabPane id="modeTab" fx:id="modePane" prefHeight="100.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="SOMETIMES" />
+        <VBox fx:id="consoleTextBox" prefHeight="78.0" prefWidth="600.0" />
+        <VBox fx:id="inputTextBox" prefHeight="52.0" prefWidth="600.0" />
+        <ToolBar prefHeight="32.0" prefWidth="600.0">
+          <items>
+            <ToggleButton id="rxtxBtn" mnemonicParsing="false" onAction="#doRxTx" text="TX" />
+            <Separator orientation="VERTICAL" prefHeight="21.0" />
+            <Button id="clearBtn" mnemonicParsing="false" onAction="#doClear" text="Clear" />
+            <Separator orientation="VERTICAL" prefHeight="21.0" />
+            <ToggleButton id="rxtxBtn" mnemonicParsing="false" onAction="#doAgc" text="AGC" />
+          </items>
+        </ToolBar>
+      </children>
+    </VBox>
+  </children>
+  <stylesheets>
+    <URL value="@main.css" />
+  </stylesheets>
+</AnchorPane>
