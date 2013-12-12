@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+  <children>
+    <VBox prefHeight="368.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <children>
+        <MenuBar id="" fx:id="menuBar" prefWidth="600.0">
+          <menus>
+            <Menu mnemonicParsing="false" text="File">
+              <items>
+                <MenuItem id="" mnemonicParsing="false" onAction="#doClose" text="Close" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Edit">
+              <items>
+                <MenuItem id="" mnemonicParsing="false" onAction="#doClear" text="Clear" fx:id="clearItem" />
+                <MenuItem mnemonicParsing="false" onAction="#doPreferences" text="Preferences..." />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="View">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#doLog" text="Log" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#doAbout" text="About" />
+              </items>
+            </Menu>
+          </menus>
+        </MenuBar>
+        <AnchorPane id="" fx:id="waterfallBox" prefHeight="121.0" prefWidth="600.0">
+          <VBox.margin>
+            <Insets />
+          </VBox.margin>
+        </AnchorPane>
+        <TabPane prefHeight="100.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="SOMETIMES">
+          <tabs>
+            <Tab onSelectionChanged="#doNoneMode" text="None">
+              <content>
+                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="41.0" prefWidth="598.0" />
+              </content>
+            </Tab>
+            <Tab onSelectionChanged="#doPskMode" text="PSK">
+              <content>
+                <HBox prefHeight="100.0" prefWidth="200.0">
+                  <children>
+                    <RadioButton id="psk31" mnemonicParsing="false" onAction="#doPsk31" selected="true" text="31">
+                      <toggleGroup>
+                        <ToggleGroup fx:id="pskRateGrp" />
+                      </toggleGroup>
+                    </RadioButton>
+                    <RadioButton id="psk63" mnemonicParsing="false" onAction="#doPsk63" text="63" toggleGroup="$pskRateGrp" />
+                    <RadioButton id="psk63" mnemonicParsing="false" onAction="#doPsk125" text="125" toggleGroup="$pskRateGrp" />
+                    <Separator orientation="VERTICAL" prefHeight="200.0" />
+                    <RadioButton id="bpskBtn" mnemonicParsing="false" onAction="#doBpsk" selected="true" text="BPSK">
+                      <toggleGroup>
+                        <ToggleGroup fx:id="pskTypeGrp" />
+                      </toggleGroup>
+                    </RadioButton>
+                    <RadioButton id="qpskBtn" mnemonicParsing="false" onAction="#doQpsk" text="QPSK" toggleGroup="$pskTypeGrp" />
+                  </children>
+                </HBox>
+              </content>
+            </Tab>
+            <Tab onSelectionChanged="#doRttyMode" text="RTTY">
+              <content>
+                <HBox prefHeight="100.0" prefWidth="200.0">
+                  <children>
+                    <RadioButton id="rtty45Btn" mnemonicParsing="false" onAction="#doRtty45b" selected="true" text="45b">
+                      <toggleGroup>
+                        <ToggleGroup fx:id="rttyRateGrp" />
+                      </toggleGroup>
+                    </RadioButton>
+                    <RadioButton id="rtty50Btn" mnemonicParsing="false" onAction="#doRtty50b" text="50b" toggleGroup="$rttyRateGrp" />
+                    <RadioButton id="rtty75Btn" mnemonicParsing="false" onAction="#doRtty75b" text="75b" toggleGroup="$rttyRateGrp" />
+                    <RadioButton id="rtty100Btn" mnemonicParsing="false" onAction="#doRtty100b" text="100b" toggleGroup="$rttyRateGrp" />
+                    <Separator orientation="VERTICAL" prefHeight="200.0" />
+                    <RadioButton id="rtty85hzBtn" mnemonicParsing="false" onAction="#doRtty85hz" text="85Hz">
+                      <toggleGroup>
+                        <ToggleGroup fx:id="rttyShiftGrp" />
+                      </toggleGroup>
+                    </RadioButton>
+                    <RadioButton id="rtty170hzBtn" mnemonicParsing="false" onAction="#doRtty170hz" selected="true" text="170Hz" toggleGroup="$rttyShiftGrp" />
+                    <RadioButton id="rtty450hzBtn" mnemonicParsing="false" onAction="#doRtty450hz" text="450Hz" toggleGroup="$rttyShiftGrp" />
+                    <RadioButton id="rtty850hzBtn" mnemonicParsing="false" onAction="#doRtty850hz" text="850Hz" toggleGroup="$rttyShiftGrp" />
+                    <Separator orientation="VERTICAL" prefHeight="200.0" />
+                    <CheckBox id="rttyUosBtn" mnemonicParsing="false" onAction="#doRttyUos" text="UoS" />
+                    <CheckBox id="rttyInvBtn" mnemonicParsing="false" onAction="#doRttyInv" text="Inv" />
+                  </children>
+                </HBox>
+              </content>
+            </Tab>
+            <Tab onSelectionChanged="#doNavtexMode" text="Navtex">
+              <content>
+                <HBox prefHeight="100.0" prefWidth="200.0">
+                  <children>
+                    <CheckBox id="navtexUosBtn" mnemonicParsing="false" onAction="#doNavtexUos" text="UoS" />
+                    <CheckBox id="navtexInvBtn" mnemonicParsing="false" onAction="#doNavtexInv" text="Inv" />
+                  </children>
+                </HBox>
+              </content>
+            </Tab>
+            <Tab onSelectionChanged="#doPacketMode" text="Packet">
+              <content>
+                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="41.0" prefWidth="600.0" />
+              </content>
+            </Tab>
+          </tabs>
+        </TabPane>
+        <VBox fx:id="consoleTextBox" prefHeight="78.0" prefWidth="600.0" />
+        <VBox fx:id="inputTextBox" prefHeight="52.0" prefWidth="600.0" />
+        <ToolBar prefHeight="32.0" prefWidth="600.0">
+          <items>
+            <ToggleButton id="rxtxBtn" mnemonicParsing="false" onAction="#doRxTx" text="TX" />
+            <Separator orientation="VERTICAL" prefHeight="21.0" />
+            <Button id="clearBtn" mnemonicParsing="false" onAction="#doClear" text="Clear" />
+          </items>
+        </ToolBar>
+      </children>
+    </VBox>
+  </children>
+</AnchorPane>
