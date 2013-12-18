@@ -29,7 +29,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FeatureSpec,Matchers}
 
-import sdr.mode.{PacketAddr}
+import org.bdigi.mode.{PacketAddr}
 
 @RunWith(classOf[JUnitRunner])
 class PacketTest extends FeatureSpec with Matchers

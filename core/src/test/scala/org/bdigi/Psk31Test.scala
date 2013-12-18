@@ -29,7 +29,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FeatureSpec,Matchers}
 
-import sdr.mode.{Psk31,QuadCodec,Varicode}
+import org.bdigi.mode.{Psk31,QuadCodec,Varicode}
 
 
 @RunWith(classOf[JUnitRunner])
