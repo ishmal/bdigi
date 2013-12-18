@@ -66,7 +66,7 @@ class PskTest extends FeatureSpec with Matchers
                 val s = Complex(nco.next.r)
                 loop.update(s)(d =>
                     {
-                    println("out: " + d)
+                    info("out: " + d)
                     })
                 }
             }

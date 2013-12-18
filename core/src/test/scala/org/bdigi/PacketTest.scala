@@ -41,11 +41,11 @@ class PacketTest extends FeatureSpec with Matchers
             {
             val addr = PacketAddr("WB4JFI", 1)
             val res = addr.encoded
-            println("res: ")
-            for (b <-res) println("%02X ".format(b))
+            info("res: ")
+            for (b <-res) info("%02X ".format(b))
             val exp = Array(0xae, 0x84, 0x68, 0x94, 0x8c, 0x92, 0x62).map(_.toByte)
-            println("exp: ")
-            for (b <-exp) println("%02X ".format(b))
+            info("exp: ")
+            for (b <-exp) info("%02X ".format(b))
             res shouldEqual exp
             }
     

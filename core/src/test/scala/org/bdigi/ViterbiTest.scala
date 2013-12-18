@@ -46,10 +46,10 @@ class ViterbiTest extends FeatureSpec with Matchers
                 true, false, true, false, false, false, true)
             //val inp = List(true, false, false)
             val encoder = Viterbi.encoder(k, poly1, poly2)
-            println(encoder)
+            info(encoder.toString)
             val enc = encoder.encodeBits(inp).map(Viterbi.toBits)
-            println("in  : " + inp.mkString(", "))
-            println("enc : " + enc.mkString(", "))
+            info("in  : " + inp.mkString(", "))
+            info("enc : " + enc.mkString(", "))
             }
     
         scenario("Test 2")
@@ -59,13 +59,13 @@ class ViterbiTest extends FeatureSpec with Matchers
             val poly2 = 5
             val encoder = Viterbi.encoder(k, poly1, poly2)
             val decoder = Viterbi.decoder(k, poly1, poly2)
-            println("=== decoder:\n" + decoder)
+            info("=== decoder:\n" + decoder)
             val inp = List(123,0,0,0,0,0,0,0)
             val enc = encoder.encodeWords(inp, 8)
-            println("in  : " + inp)
-            println("enc : " + enc.map(Viterbi.toBits).mkString(", "))
+            info("in  : " + inp)
+            info("enc : " + enc.map(Viterbi.toBits).mkString(", "))
             val dec = Viterbi.fromBits(decoder.decodeHard(enc))
-            println("dec: " + dec.mkString(","))
+            info("dec: " + dec.mkString(","))
             }
     
         scenario("Test 3")
@@ -75,19 +75,16 @@ class ViterbiTest extends FeatureSpec with Matchers
             val poly2 = 0x19
             val encoder = Viterbi.encoder(k, poly1, poly2)
             val decoder = Viterbi.decoder(k, poly1, poly2)
-            println(encoder)
+            info(encoder.toString)
             val inp = "the quick brown fox jumped over the lazy dog's back"
             val enc = encoder.encodeStr(inp + "       ").toArray
-            println("encoded: " + enc.map(Viterbi.toBits).mkString(","))
+            info("encoded: " + enc.map(Viterbi.toBits).mkString(","))
             enc(5) = 0  
-            //println("broken: " + enc.map(Viterbi.toBits).mkString(","))  
+            //info("broken: " + enc.map(Viterbi.toBits).mkString(","))  
             val dec = Viterbi.fromBits(decoder.decodeHard(enc))
             val str = dec.map(_.toChar).mkString.substring(7)
-            println("dec: '" + str + "'")
-            if (inp == str)
-                println("success")
-            else
-                println("failure")
+            info("dec: '" + str + "'")
+            inp shouldEqual str
             }
     
         scenario("Test 4")
@@ -108,10 +105,10 @@ class ViterbiTest extends FeatureSpec with Matchers
                 val str = dec.map(_.toChar).mkString.substring(7)
                 if (str != inp)
                     {
-                    println("fail at " + i + " : '" + str + "'")
+                    info("fail at " + i + " : '" + str + "'")
                     keepGoing = false
                     }
-                if (i % 10000 == 0) println(i)
+                if (i % 10000 == 0) info(i.toString)
                 i += 1
                 }
             }

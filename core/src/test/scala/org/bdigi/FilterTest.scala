@@ -40,12 +40,12 @@ class FilterTest extends FeatureSpec with Matchers
             //Basic Low Pass coefficients
             val f = Fir.lowPass(21, 460.0, 2000.0, Window.Rectangle)
             for (c <- f.coeffs)
-                println(c)            
+                info(c.toString)            
             //Basic Raised Cosine coefficients
             //note, they suggest size of >= 4*samplesPerSymbol + 1
             val f2 = Fir.raisedCosine(21, 0.5, 50.0, 100.0, Window.Rectangle)
             for (c <- f2.coeffs)
-                println(c)            
+                info(c.toString)            
             }
     
         def f2Test(f: Fir) =
@@ -62,7 +62,7 @@ class FilterTest extends FeatureSpec with Matchers
                     acc(i) += timeData(i)
                 }            
             for (i <- 0 until acc.size)
-                println("i:" + i + " : " + acc(i).mag)
+                info("i:" + i + " : " + acc(i).mag)
             }
     
         scenario("Filter tests")
@@ -92,13 +92,13 @@ class FilterTest extends FeatureSpec with Matchers
             {
             val f = Fir.lowPass(21, 1000.0, 10000.0)
             val v = f.update(1.0)
-            println("0: " + v)
-            println("c0: " + f.coeffs(0))
+            info("0: " + v)
+            info("c0: " + f.coeffs(0))
             for (i <- 1 until 21)
                 {
                 val b = f.update(0)
-                println("" + i + ": " + b)
-                println("c" + i + ": " + f.coeffs(i))
+                info("" + i + ": " + b)
+                info("c" + i + ": " + f.coeffs(i))
                 }
             }
 

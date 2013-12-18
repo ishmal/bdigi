@@ -45,7 +45,7 @@ class ResampleTest extends FeatureSpec with Matchers
                 {
                 resampler.decimate(sample) ( v =>
                     {
-                    //println("dec: " + v)
+                    //info("dec: " + v)
                     assert (math.abs(sample - v) < 0.01)
                     })
                 }
@@ -67,7 +67,7 @@ class ResampleTest extends FeatureSpec with Matchers
                 {
                 resampler.interpolate(sample) ( v =>
                     {
-                    //println("int: " + v)
+                    //info("int: " + v)
                     assert (math.abs(sample - v) < 0.01)
                     })
                 }

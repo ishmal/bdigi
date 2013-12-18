@@ -40,7 +40,7 @@ class Psk31Test extends FeatureSpec with Matchers
     def encodeBpsk(c: Int) : Seq[Complex] =
         {
         val bits = Varicode.encodeTable(c & 127) ++ Array(false, false) 
-        //println("c: " + c.toChar + " : " + bits.mkString(", "))
+        //info("c: " + c.toChar + " : " + bits.mkString(", "))
         bits.map(bit =>
             {
             if (!bit) bval = -bval
@@ -66,7 +66,7 @@ class Psk31Test extends FeatureSpec with Matchers
         {
         val bits = Varicode.encodeTable(c & 127) ++ Array(false, false) 
         val dibits = encoder.encodeBits(bits)
-        //println("c: " + c.toChar + " : " + bits.mkString(", "))
+        //info("c: " + c.toChar + " : " + bits.mkString(", "))
         dibits.map(dibit =>
             {
             val qval = if (dibit == 0)
@@ -85,7 +85,7 @@ class Psk31Test extends FeatureSpec with Matchers
                 {
                 lastqval  //dont move
                 }
-            println("out: %d %s %s".format(dibit, lastqval, qval))
+            info("out: %d %s %s".format(dibit, lastqval, qval))
             lastqval = qval
             qval
             })
@@ -128,13 +128,13 @@ class Psk31Test extends FeatureSpec with Matchers
             var cpx = encodeBpsk(str)
             for (v <- cpx)
                 {
-                //println("v: " + v)
+                //info("v: " + v)
                 psk.processSymbol(v)
                 }
             cpx = encodeBpsk(str)
             for (v <- cpx)
                 {
-                //println("v: " + v)
+                //info("v: " + v)
                 psk.processSymbol(v)
                 }
             app.stop
@@ -144,12 +144,12 @@ class Psk31Test extends FeatureSpec with Matchers
             {
             val qc = new QuadCodec
             val inp = List(0,1,2,3,0,1,2,3)
-            println("inp: " + inp.mkString(","))
+            info("inp: " + inp.mkString(","))
             val cpx = qc.encode(inp)
             for (v <- cpx)
                 {
                 val out = qc.toIndex(qc.decode(v))
-                println("out: " + out)
+                info("out: " + out)
                 }
             }
         
@@ -167,7 +167,7 @@ class Psk31Test extends FeatureSpec with Matchers
             val cpx = encodeQpsk(str)
             for (v <- cpx)
                 {
-                //println("v: " + v)
+                //info("v: " + v)
                 psk.processSymbol(v)
                 }
             app.stop

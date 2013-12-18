@@ -54,13 +54,13 @@ class MainTest extends FeatureSpec with Matchers
                                 case Terminate =>
                                     keepGoing = false
                                 case fall: sdr.gui.Waterfall =>
-                                    println("received waterfall")
+                                    info("received waterfall")
                                 }
                             }
                         }
                     }
                 }
-            println("hello")
+            info("hello")
             val audio = new JavaSoundAudio(me)
             me.receiver.start
             audio.start

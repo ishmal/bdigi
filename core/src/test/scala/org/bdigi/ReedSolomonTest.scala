@@ -98,7 +98,7 @@ class ReedSolomonTest extends FeatureSpec with Matchers
             {
             val poly = 0x011d  // x8+x4+x3+x2+1
             val rs = new ReedSolomon(255, 239, poly)  //239 data bytes, 16 parity, 8 corrections
-            println(rs)
+            info(rs.toString)
             val rawdata = Array(0xD4,0xBA,0xA1,0x12,0xF2,0x74,0x96,0x30,
                                 0x27,0xD4,0x88,0x9C,0x96,0xE3,0xA9,0x52,
                                 0xB3,0x15,0xAB,0xFD,0x92,0x53,0x07,0x32,
@@ -114,17 +114,17 @@ class ReedSolomonTest extends FeatureSpec with Matchers
     
             val enc = rs.encode(rawdata, false)
             for (v <- enc)
-                println("%02x".format(v))
+                info("%02x".format(v))
             enc shouldEqual encdata
             val dec = rs.decode(enc)
             if (dec.isDefined)
                 {
                 for (v <- dec.get)
-                    println(v.toHexString)
+                    info(v.toHexString)
                 }
             else
                 {
-                println("failure")
+                info("failure")
                 }
             }
     
@@ -133,31 +133,31 @@ class ReedSolomonTest extends FeatureSpec with Matchers
             {
             val poly = 0x0187  // x8+x4+x3+x2+1
             val rs = new ReedSolomon(255, 239, poly, 112, 11)  //239 data bytes, 16 parity, 8 corrections
-            println(rs)
+            info(rs.toString)
             val str = "the quick brown fox jumped over the lazy dog"
-            println("#### Before")
+            info("#### Before")
             val rawdata = str.getBytes.map(_.toInt)
             for (v <- rawdata)
-                    println("%02x".format(v))
+                    info("%02x".format(v))
     
             val enc = rs.encode(rawdata)
-            println("#### Encoded")
+            info("#### Encoded")
             for (v <- enc)
-                println("%02x".format(v))
+                info("%02x".format(v))
             enc(enc.size/2) = 0xff //insert an error
             val dec = rs.decode(enc)
-            println("#### Decoded")
+            info("#### Decoded")
             if (dec.isDefined)
                 {
                 for (v <- dec.get)
                     {
-                    println("%02x".format(v))
+                    info("%02x".format(v))
                     }
-                println(dec.get.map(_.toChar).mkString)
+                info(dec.get.map(_.toChar).mkString)
                 }
             else
                 {
-                println("failure")
+                info("failure")
                 }
             }
     
@@ -169,7 +169,7 @@ class ReedSolomonTest extends FeatureSpec with Matchers
             val poly = 0x13  // 1,0,0,1,1
             val data = Array(8,6,8,1,2,4,15,9,9)
             val rs = new ReedSolomon(15, 11,poly)
-            println(rs)   
+            info(rs.toString)   
             }
         
         scenario("Test 4")
@@ -230,7 +230,7 @@ class ReedSolomonTest extends FeatureSpec with Matchers
             val msg8 = c6to8(message1)
             val enc = rsenc.encode(msg8)
             val enc6 = c8to6(enc)
-            enc6.foreach(println)
+            enc6.foreach(e=> info(e.toString))
             }
 
         }

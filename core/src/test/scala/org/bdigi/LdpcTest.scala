@@ -38,7 +38,7 @@ class CRC32Test extends FeatureSpec with Matchers
             {
             val res = CRC32("the quick brown fox".getBytes)
             val exp = 0x91C102CAL
-            println("res:" + res + " exp:" + exp)
+            info("res:" + res + " exp:" + exp)
             res should equal (exp)
             }
         }
@@ -60,13 +60,13 @@ class TannerTest extends FeatureSpec with Matchers
                 1, 0, 1, 0, 0, 1        
                 )
             
-            println("H:" + H)
+            info("H:" + H)
     
             val t = new Tanner(H)
-            println("=== Variable nodes === :" + t.v.size)
-            for (n <- t.v) println(n)
-            println("=== Check nodes === :" + t.c.size)
-            for (n <- t.c) println(n)
+            info("=== Variable nodes === :" + t.v.size)
+            for (n <- t.v) info(n.toString)
+            info("=== Check nodes === :" + t.c.size)
+            for (n <- t.c) info(n.toString)
                 
             }
         }
@@ -109,12 +109,11 @@ class BitSetTest  extends FeatureSpec with Matchers
                             0.toByte, 1.toByte, 0.toByte, 1.toByte, 0.toByte, 1.toByte, 0.toByte, 1.toByte)
             if (bits.toList != exp.toList)
                 {
-                println("lists not equal")
-                println("bits:")
+                info("lists not equal")
+                info("bits:")
                 bits.foreach(print)
-                println("\nexpected:")
+                info("\nexpected:")
                 exp.foreach(print)
-                println()
                 }
             bits.toList should equal (exp.toList)
             }
@@ -126,9 +125,9 @@ class BitSetTest  extends FeatureSpec with Matchers
             val res   = Bits.bitsToBytes(bits)
             if (bytes.toList != res.toList)
                 {
-                println("lists not equal")
-                println("bytes:" + bytes.mkString("[", ",", "]"))
-                println("res  :" + res.mkString("[", ",", "]"))
+                info("lists not equal")
+                info("bytes:" + bytes.mkString("[", ",", "]"))
+                info("res  :" + res.mkString("[", ",", "]"))
                 }
             bytes.toList should equal (res.toList)
             }
@@ -141,9 +140,9 @@ class BitSetTest  extends FeatureSpec with Matchers
             val exp  = Array[Byte](1, 0, 0, 0, 0, 1, 1, 1)
             if (res.toList != res.toList)
                 {
-                println("lists not equal")
-                println("res :" + res.mkString("[", ",", "]"))
-                println("exp :" + exp.mkString("[", ",", "]"))
+                info("lists not equal")
+                info("res :" + res.mkString("[", ",", "]"))
+                info("exp :" + exp.mkString("[", ",", "]"))
                 }
             res.toList should equal (exp.toList)
             }
@@ -158,9 +157,9 @@ class BitSetTest  extends FeatureSpec with Matchers
             val exp  = Array[Byte](0, 1, 1, 1, 0, 1, 1, 1)
             if (res.toList != exp.toList)
                 {
-                println("lists not equal")
-                println("res :" + res.mkString("[", ",", "]"))
-                println("exp :" + exp.mkString("[", ",", "]"))
+                info("lists not equal")
+                info("res :" + res.mkString("[", ",", "]"))
+                info("exp :" + exp.mkString("[", ",", "]"))
                 }
             res.toList should equal (exp.toList)
             }
@@ -190,9 +189,9 @@ class LdpcTest extends FeatureSpec with Matchers
             val decoded = code.decode(encoded)
             val finalCrc = CRC32(plain)
             if (origCrc == finalCrc)
-                println("Test passed")
+                info("Test passed")
             else
-                println("Test failed")
+                info("Test failed")
             }
 
         }//feature LDPC
