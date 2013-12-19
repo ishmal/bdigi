@@ -417,14 +417,8 @@ class Psk31(par: App) extends Mode(par, 1000.0)
 
     val decoder = Viterbi.decoder(5, 0x17, 0x19)
     
-    private var qpskModeVal = false
+    var qpskMode = false
     
-    def qpskMode = qpskModeVal
-    
-    def qpskMode_=(v: Boolean) =
-        {
-        qpskModeVal = v
-        }
         
     def angleDiff(a: Double, b: Double) : Double =
         {
