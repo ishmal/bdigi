@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+
+
+
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+
+<script>
+
+function DigiTest(anchorName) {
+
+    var self = this;
+    
+    var anchor = $(anchorName);
+
+    //Let's get the local implementations
+    window.requestAnimationFrame = window.requestAnimationFrame ||
+                                   window.msRequestAnimationFrame ||
+                                   window.mozRequestAnimationFrame ||
+                                   window.webkitRequestAnimationFrame;
+
+    window.AudioContext = window.AudioContext ||
+                          window.webkitAudioContext;
+
+    navigator.getUserMedia = navigator.getUserMedia ||
+                             navigator.webkitGetUserMedia ||
+                             navigator.mozGetUserMedia ||
+                             navigator.msGetUserMedia;
+
+
+    function trace(msg) {
+        if (typeof console !== "undefined") 
+            console.log("Digi: " + msg);
+    }
+
+    function error(msg) {
+        if (typeof console !== "undefined") 
+            console.log("Digi error: " + msg);
+    }
+
+    var actx = new AudioContext();
+
+
+    function Waterfall(parent, width, height, bins) {
+    
+        var indices = [];
+        for (var i=0 ; i < width ; i++) {
+            indices.push(Math.floor(i * bins / width));
+        }
+        
+        var canvas = $("<canvas>").width(width).height(height);
+        parent.append(canvas);
+        var ctx = canvas.get(0).getContext('2d'); 
+
+        var counter = 0;
+        
+        this.update = function(data) {
+            //trace("len:" + data.length);
+            ctx.fillStyle = 'midnightblue';
+            ctx.fillRect(0,0,width,height);
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(255, 0, 0, 1.0)';
+            ctx.moveTo(0,height);
+            for (var x=0; x<width ; x++) {
+                var v = Math.log(1.0 + data[indices[x]]);
+                var y = height - 50*v;
+                ctx.lineTo(x, y);
+            }   
+            ctx.lineTo(width,height);
+            ctx.closePath();
+            ctx.fill();   
+        }
+    
+    }
+    
+    var fftSize = 2048;
+    var waterfall = new Waterfall(anchor, 800, 600, fftSize/2);
+    
+
+
+
+
+    function AudioInput() {
+    
+        var analyser = null;
+        
+        function process() {
+            var data = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(data);
+            //trace("process:" + data.length);
+            waterfall.update(data);
+            requestAnimationFrame(process);
+        }
+        
+
+        function startStream(stream) {
+        
+            var inputNode = actx.createGain();
+            inputNode.gain.value=1.0;
+
+            var audioInput = actx.createMediaStreamSource(stream);
+            audioInput.connect(inputNode);
+
+            analyser = actx.createAnalyser();
+            analyser.fftSize = fftSize;
+
+            inputNode.connect(analyser);
+
+            requestAnimationFrame(process);
+          }
+
+        navigator.getUserMedia({ audio : true }, startStream, function(errormsg) {
+            error(errormsg);
+        });
+        
+        
+        
+    }
+    
+    new AudioInput();
+
+} //DigiTest
+
+
+
+$(document).ready(function() {
+
+    new DigiTest("#digi");
+
+});
+
+
+
+</script>
+
+</head>
+
+<body>
+<h3>FFT Test</h3>
+
+
+<div id="digi"></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
