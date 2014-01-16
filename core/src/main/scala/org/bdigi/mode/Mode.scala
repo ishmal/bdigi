@@ -189,11 +189,10 @@ class Mode(var par: App, val sampleRateHint: Double)
     private val continuousWave = Array.ofDim[Double](2048)
     
     /**
-     * This is the inverse of receive().  Return None at end-of-data
+     * Increate data rate to "bus" speed, upmix to frequency
      */                                  
-    def getTransmitData : Option[Array[Double]] =
+    def upmixTransmitData(data: Option[Array[Complex]]) : Option[Array[Double]] =
         {
-        val data = transmit
         if (data.isEmpty)
             None
         else
@@ -212,6 +211,17 @@ class Mode(var par: App, val sampleRateHint: Double)
             Some(buf.toArray)
             }
         }
+    
+    /**
+     * Override this for each mode.
+     */                                  
+    def transmitBegin : Option[Array[Complex]] =
+        {
+        None
+        }
+        
+    def getTransmitBeginData : Option[Array[Double]] =
+        upmixTransmitData(transmitBegin)
         
     /**
      * This is the inverse of update().  Return None at end-of-data.
@@ -222,7 +232,21 @@ class Mode(var par: App, val sampleRateHint: Double)
         None
         }
         
-    
+    def getTransmitData : Option[Array[Double]] =
+        upmixTransmitData(transmit)
+        
+    /**
+     * This is the inverse of update().  Return None at end-of-data.
+     * Override this for each mode.
+     */                                  
+    def transmitEnd : Option[Array[Complex]] =
+        {
+        None
+        }
+        
+    def getTransmitEndData : Option[Array[Double]] =
+        upmixTransmitData(transmitEnd)        
+
 }
 
 class NullMode(par: App) extends Mode(par)

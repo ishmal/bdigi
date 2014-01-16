@@ -4,7 +4,7 @@
  * Authors:
  *   Bob Jamison
  *
- * Copyright (C) 2013 Bob Jamison
+ * Copyright (C) 2014 Bob Jamison
  * 
  *  This file is part of the Scala SDR library.
  *
@@ -546,11 +546,10 @@ class Psk31(par: App) extends Mode(par, 1000.0)
         {
         val zero = if (qpskMode) 0 else 2
         val buf = scala.collection.mutable.ListBuffer[Complex]()
-        for (c <- str)
+        var filteredStr = str.filter(_ < 128)
+        for (c <- filteredStr)
             {
             val code = c.toInt
-            if (code < 128)
-                {
                 val bits = Varicode.encodeTable(code)
                 for (b <- bits)
                     {
@@ -561,7 +560,6 @@ class Psk31(par: App) extends Mode(par, 1000.0)
                     }
                 buf += txEnc(zero)
                 buf += txEnc(zero) 
-                } 
             }
 
         val pad = desiredOutput - buf.size
@@ -578,6 +576,13 @@ class Psk31(par: App) extends Mode(par, 1000.0)
         }
 
     private var txPrevSym = Complex(-1.0)
+    
+    
+    override def transmitBegin : Option[Array[Complex]] =
+        {
+        val xs = Array.fill(32)(txEnc(0))
+        Some(xs)
+        }
 
     override def transmit : Option[Array[Complex]] =
         {
@@ -601,6 +606,12 @@ class Psk31(par: App) extends Mode(par, 1000.0)
         
         val res = buf.toArray.map(txFilter.update)
         Some(res)
+        }
+
+    override def transmitEnd : Option[Array[Complex]] =
+        {
+        val xs = Array.fill(32)(txEnc(0))
+        Some(xs)
         }
 
 }

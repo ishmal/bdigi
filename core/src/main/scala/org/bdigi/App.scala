@@ -4,7 +4,7 @@
  * Authors:
  *   Bob Jamison
  *
- * Copyright (C) 2013 Bob Jamison
+ * Copyright (C) 2014 Bob Jamison
  * 
  *  This file is part of the Scala SDR library.
  *
@@ -266,6 +266,9 @@ class App
         override def run =
             {
             cont = true
+            val preamble = mode.getTransmitBeginData
+            if (preamble.isDefined)
+                outputDevice.get.write(preamble.get)
             while (cont && outputDevice.isDefined)
                 {
                 val res = mode.getTransmitData
@@ -279,6 +282,9 @@ class App
                     outputDevice.get.write(res.get)
                     }
                 }
+            val postamble = mode.getTransmitEndData
+            if (postamble.isDefined)
+                outputDevice.get.write(postamble.get)
             }
     }
     
