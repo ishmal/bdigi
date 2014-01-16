@@ -4,7 +4,7 @@
  * Authors:
  *   Bob Jamison
  *
- * Copyright (C) 2013 Bob Jamison
+ * Copyright (C) 2014 Bob Jamison
  *
  *  This file is part of the Scala SDR library.
  *
