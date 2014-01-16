@@ -4,7 +4,7 @@
  * Authors:
  *   Bob Jamison
  *
- * Copyright (C) 2013 Bob Jamison
+ * Copyright (C) 2014 Bob Jamison
  * 
  *  This file is part of the Scala SDR library.
  *
@@ -204,7 +204,7 @@ class Mode(var par: App, val sampleRateHint: Double)
                 interpolator.interpolate(v) ( vv => 
                     {
                     val outv = vv * nco.next
-                    val outvv = 2.0 * (outv.abs - 0.5)
+                    val outvv = outv.r + outv.i
                     //trace("vv:" + outvv)
                     buf.append(outvv) 
                     })
