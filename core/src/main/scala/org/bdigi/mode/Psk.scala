@@ -577,40 +577,40 @@ class Psk31(par: App) extends Mode(par, 1000.0)
 
     private var txPrevSym = Complex(-1.0)
     
+    private def shape(xs: Array[Complex]) : Array[Complex] =
+        {
+        val symbollen = samplesPerSymbol.toInt
+        val buf = scala.collection.mutable.ListBuffer[Complex]()
+        for (sym <- xs)
+            {
+            for (i <- 0 until symbollen)
+                {
+                val shapeA = txShape(i)
+                val iq = sym * shapeA
+                buf += iq
+                }
+            }
+        
+        val res = buf.toArray.map(txFilter.update)
+        res
+        }
+    
     
     override def transmitBegin : Option[Array[Complex]] =
         {
-        val xs = Array.fill(32)(txEnc(0))
+        val xs = shape(Array.fill(32)(txEnc(0)))
         Some(xs)
         }
 
     override def transmit : Option[Array[Complex]] =
         {
-        val symbollen = samplesPerSymbol.toInt
-        val buf = scala.collection.mutable.ListBuffer[Complex]()
-        val syms = txNext
-        for (sym <- syms)
-            {
-            for (i <- 0 until symbollen)
-                {
-                val shapeA = txShape(i)
-                val shapeB = 1.0 - shapeA
-        
-                val iq   = txPrevSym * shapeA + sym * shapeB
-        
-                buf += iq
-                }
-            
-            txPrevSym = sym
-            }
-        
-        val res = buf.toArray.map(txFilter.update)
-        Some(res)
+        val xs = shape(txNext)
+        Some(xs)
         }
 
     override def transmitEnd : Option[Array[Complex]] =
         {
-        val xs = Array.fill(32)(txEnc(0))
+        val xs = shape(Array.fill(32)(txEnc(0)))
         Some(xs)
         }
 
