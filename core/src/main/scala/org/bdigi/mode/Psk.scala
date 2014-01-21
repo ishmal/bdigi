@@ -366,8 +366,34 @@ class Psk31(par: App) extends Mode(par, 1000.0)
             0.5 * math.cos(math.Pi * i / samplesPerSymbol) + 0.5
             })
         }
+        
+        
+    def makeTransitions : Array[Array[Array[Complex]]] =
+        {
+        val phases = Array[Complex](
+            Complex(1,0), Complex(0,1), Complex(-1,0), Complex(0, -1)
+        )
+        val samples = samplesPerSymbol.toInt
+        val xs = Array.ofDim[Complex](4, 4, samples)
+        val delta = math.Pi / samples
+        for (fromPhase <- 0 until 4; toPhase <- 0 until 4)
+            {
+            for (i <- 0 until samples/2)
+                {
+                val c = if (fromPhase == toPhase) 1.0 else math.cos(i*delta)
+                xs(fromPhase)(toPhase)(i) = phases(fromPhase) * c
+                }
+            for (i <- samples/2 until samples)
+                {
+                val c = if (fromPhase == toPhase) 1.0 else math.cos(i*delta)
+                xs(fromPhase)(toPhase)(i) = phases(toPhase) * c
+                }
+            }
+        xs
+        }
+        
+    var phaseTransitions = makeTransitions
     
-    var txShape = makeTxShape
     var txFilter = Fir.lowPass(31, frequency + rate*0.5, sampleRate)
     
     var useCostas = false
@@ -376,7 +402,7 @@ class Psk31(par: App) extends Mode(par, 1000.0)
         {
         super.rate = v
         //costas  = new CostasLoop2(frequency, rate,  sampleRate)
-        txShape = makeTxShape
+        phaseTransitions = makeTransitions
         bpf = Fir.bandPass(13, -0.7*rate, 0.7*rate, sampleRate)
         dataFilter = Fir.raisedCosine(samplesPerSymbol.toInt * 4 + 1, 0.35, rate, sampleRate)
         timer = new EarlyLate(samplesPerSymbol)
@@ -522,22 +548,13 @@ class Psk31(par: App) extends Mode(par, 1000.0)
 
     val encoder = Viterbi.encoder(5, 0x17, 0x19)
     
-    private val rotate = Array(
-        Complex( 1.0,  0.0),  //  00 ->   0 deg
-        Complex( 0.0,  1.0),  //  01 ->  90 
-        Complex(-1.0,  0.0),  //  10 -> 180
-        Complex( 0.0, -1.0)   //  11 -> 270
-        )
-    
-    private var lastEncSym = Complex(1.0)
-    // expect 0, 1, 2, 3
-    private def txEnc(dibit: Int) : Complex =
+    private var lastSym = 0
+
+    private def txEnc(sym: Int) : Array[Complex] =
         {
-        val rot = if (qpskMode) rotate(dibit ^ 3) else rotate(dibit)
-        //println("dibit: " + dibit + " rot: " + rot)
-        val sym = lastEncSym * rot
-        lastEncSym = sym
-        sym  
+        val ret = phaseTransitions(lastSym)(sym)
+        lastSym = sym
+        ret 
         }
 
     private val desiredOutput = 100
@@ -550,21 +567,21 @@ class Psk31(par: App) extends Mode(par, 1000.0)
         for (c <- filteredStr)
             {
             val code = c.toInt
-                val bits = Varicode.encodeTable(code)
-                for (b <- bits)
-                    {
-                    if (qpskMode)
-                        buf += txEnc(encoder.encode(b))
-                    else
-                        buf += txEnc(if (b) 0 else 2)
-                    }
-                buf += txEnc(zero)
-                buf += txEnc(zero) 
+            val bits = Varicode.encodeTable(code)
+            for (b <- bits)
+                {
+                if (qpskMode)
+                    buf ++= txEnc(encoder.encode(b))
+                else
+                    buf ++= txEnc(if (b) 0 else 2)
+                }
+            buf ++= txEnc(zero)
+            buf ++= txEnc(zero) 
             }
 
         val pad = desiredOutput - buf.size
         for (i <- 0 until pad)
-            buf += txEnc(zero)
+            buf ++= txEnc(zero)
 
         buf.toArray
         }
@@ -575,42 +592,23 @@ class Psk31(par: App) extends Mode(par, 1000.0)
         txEnc(par.gettext)
         }
 
-    private var txPrevSym = Complex(-1.0)
-    
-    private def shape(xs: Array[Complex]) : Array[Complex] =
-        {
-        val symbollen = samplesPerSymbol.toInt
-        val buf = scala.collection.mutable.ListBuffer[Complex]()
-        for (sym <- xs)
-            {
-            for (i <- 0 until symbollen)
-                {
-                val shapeA = txShape(i)
-                val iq = sym * shapeA
-                buf += iq
-                }
-            }
-        
-        val res = buf.toArray.map(txFilter.update)
-        res
-        }
     
     
     override def transmitBegin : Option[Array[Complex]] =
         {
-        val xs = shape(Array.fill(32)(txEnc(0)))
+        val xs = Array.fill(32)(0).map(txEnc).flatten
         Some(xs)
         }
 
     override def transmit : Option[Array[Complex]] =
         {
-        val xs = shape(txNext)
+        val xs = txNext
         Some(xs)
         }
 
     override def transmitEnd : Option[Array[Complex]] =
         {
-        val xs = shape(Array.fill(32)(txEnc(0)))
+        val xs = Array.fill(32)(0).map(txEnc).flatten
         Some(xs)
         }
 
