@@ -370,23 +370,20 @@ class Psk31(par: App) extends Mode(par, 1000.0)
         
     def makeTransitions : Array[Array[Array[Complex]]] =
         {
-        val phases = Array[Complex](
-            Complex(1,0), Complex(0,1), Complex(-1,0), Complex(0, -1)
-        )
+        val phases = Array( Complex(1,0), Complex(0,1), Complex(-1,0), Complex(0, -1) )
         val samples = samplesPerSymbol.toInt
+        val shape = makeTxShape
         val xs = Array.ofDim[Complex](4, 4, samples)
-        val delta = math.Pi / samples
+        val omega = math.Pi / samples
         for (fromPhase <- 0 until 4; toPhase <- 0 until 4)
             {
-            for (i <- 0 until samples/2)
+            val symFrom = phases(fromPhase)
+            val symTo   = phases(toPhase)
+            for (i <- 0 until samples)
                 {
-                val c = if (fromPhase == toPhase) 1.0 else math.cos(i*delta)
-                xs(fromPhase)(toPhase)(i) = phases(fromPhase) * c
-                }
-            for (i <- samples/2 until samples)
-                {
-                val c = if (fromPhase == toPhase) 1.0 else math.cos(i*delta)
-                xs(fromPhase)(toPhase)(i) = phases(toPhase) * c
+                val shapeFrom = shape(i)
+                val shapeTo = 1.0 - shapeFrom
+                xs(fromPhase)(toPhase)(i) =  symFrom * shapeFrom + symTo * shapeTo
                 }
             }
         xs
