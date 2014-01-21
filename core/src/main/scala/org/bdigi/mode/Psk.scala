@@ -359,40 +359,6 @@ class Psk31(par: App) extends Mode(par, 1000.0)
     var bpf = Fir.bandPass(13, -0.7*rate, 0.7*rate, sampleRate)
     var timer = new EarlyLate(samplesPerSymbol)
     
-    def makeTxShape : Array[Double] =
-        {
-        Array.tabulate(samplesPerSymbol.toInt)(i =>
-            {
-            0.5 * math.cos(math.Pi * i / samplesPerSymbol) + 0.5
-            })
-        }
-        
-        
-    def makeTransitions : Array[Array[Array[Complex]]] =
-        {
-        val phases = Array( Complex(1,0), Complex(0,1), Complex(-1,0), Complex(0, -1) )
-        val samples = samplesPerSymbol.toInt
-        val shape = makeTxShape
-        val xs = Array.ofDim[Complex](4, 4, samples)
-        val omega = math.Pi / samples
-        for (fromPhase <- 0 until 4; toPhase <- 0 until 4)
-            {
-            val symFrom = phases(fromPhase)
-            val symTo   = phases(toPhase)
-            for (i <- 0 until samples)
-                {
-                val shapeFrom = shape(i)
-                val shapeTo = 1.0 - shapeFrom
-                xs(fromPhase)(toPhase)(i) =  symFrom * shapeFrom + symTo * shapeTo
-                }
-            }
-        xs
-        }
-        
-    var phaseTransitions = makeTransitions
-    
-    var txFilter = Fir.lowPass(31, frequency + rate*0.5, sampleRate)
-    
     var useCostas = false
     
     override def rate_=(v: Double) =
@@ -543,6 +509,40 @@ class Psk31(par: App) extends Mode(par, 1000.0)
     //# T R A N S M I T
     //###########################################################
 
+    def makeTxShape : Array[Double] =
+        {
+        Array.tabulate(samplesPerSymbol.toInt)(i =>
+            {
+            0.5 * math.cos(math.Pi * i / samplesPerSymbol) + 0.5
+            })
+        }
+        
+        
+    def makeTransitions : Array[Array[Array[Complex]]] =
+        {
+        val phases = Array( Complex(1,0), Complex(0,1), Complex(-1,0), Complex(0, -1) )
+        val samples = samplesPerSymbol.toInt
+        val shape = makeTxShape
+        val xs = Array.ofDim[Complex](4, 4, samples)
+        val omega = math.Pi / samples
+        for (fromPhase <- 0 until 4; toPhase <- 0 until 4)
+            {
+            val symFrom = phases(fromPhase)
+            val symTo   = phases(toPhase)
+            for (i <- 0 until samples)
+                {
+                val shapeFrom = shape(i)
+                val shapeTo = 1.0 - shapeFrom
+                xs(fromPhase)(toPhase)(i) =  symFrom * shapeFrom + symTo * shapeTo
+                }
+            }
+        xs
+        }
+        
+    var phaseTransitions = makeTransitions
+    
+    var txFilter = Fir.lowPass(31, frequency + rate*0.5, sampleRate)
+    
     val encoder = Viterbi.encoder(5, 0x17, 0x19)
     
     private var lastSym = 0
