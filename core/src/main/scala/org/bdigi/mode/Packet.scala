@@ -282,7 +282,7 @@ object Packet
  *  
  * @see http://www.tapr.org/pub_ax25.html
  */    
-class PacketMode(par: App) extends Mode(par, 250.0)
+class PacketMode(par: App) extends Mode(par, 2400.0)
 {
     override val name = "packet"
     override val tooltip = "AX.25 and APRS"

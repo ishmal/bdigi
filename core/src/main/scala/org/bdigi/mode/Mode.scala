@@ -156,10 +156,10 @@ class Mode(var par: App, val sampleRateHint: Double)
 
     /**
      * This is used for modulation and demodulation, and timing
-     * and decoding.
+     * and decoding.  Make sure sampleRate > rate!!
      */              
     def samplesPerSymbol =
-        sampleRate /rate
+        sampleRate / rate
         
         
  
