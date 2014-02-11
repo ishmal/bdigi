@@ -381,7 +381,7 @@ class Main extends Application
             loader.setController(controller)
             val page = loader.load.asInstanceOf[Parent]
             val scene = new Scene(page)
-            stage.setTitle("ScalaDigi")
+            stage.setTitle("bdigi")
             stage.getIcons.add(new Image(getClass.getResourceAsStream("/icon.png")));
             stage.setScene(scene)
             stage.show

@@ -287,10 +287,20 @@ class PacketMode(par: App) extends Mode(par, 2400.0)
     override val name = "packet"
     override val tooltip = "AX.25 and APRS"
     
-    override val properties = new PropertyGroup(name)
+    private val rates = List(
+         ( "300",  300.0),
+         ("1200", 1200.0)
+    )
+
+    val shifts = List(
+        ( "200",  200.0 ),
+        ("1000", 1000.0 )
+    )
+    override val properties = new PropertyGroup(name,
+        new RadioProperty("rate", "Rate", rates.map(_._1), "baud rate") (idx => rate = rates(idx)._2 ),
+        new RadioProperty("shift", "Shift", shifts.map(_._1), "Spacing in hertz between mark and space", 1) ( idx => shift = shifts(idx)._2 )
+    )
         
-    var inverted = false
-    
     private var shiftVal = 200.0
     
     def shift = shiftVal
@@ -299,6 +309,12 @@ class PacketMode(par: App) extends Mode(par, 2400.0)
         {
         shiftVal = v
         }
+    
+    override def rate_=(v: Double) =
+        {
+        super.rate = v
+        adjust
+        }
 
     rate      =  300.0
     shift     =  200.0
@@ -306,32 +322,36 @@ class PacketMode(par: App) extends Mode(par, 2400.0)
     override def bandwidth =
         shift
     
-    def N = (sampleRate / rate).toInt
-
-    var sf = Fir.bandPass(13, -0.5*(shift+rate), -0.5*(shift-rate), sampleRate)
-    var mf = Fir.bandPass(13,  0.5*(shift-rate),  0.5*(shift+rate), sampleRate)
     var spaceFreq = Complex(twopi * (-shift * 0.5) / sampleRate)
     var markFreq  = Complex(twopi * ( shift * 0.5) / sampleRate)
-    var txFilter    = Fir.lowPass(21, rate, sampleRate)
+    
+    var sf = Fir.bandPass(13, -0.75 * shift, -0.25 * shift, sampleRate)
+    var mf = Fir.bandPass(13,  0.25 * shift,  0.75 * shift, sampleRate)
+    //var dataFilter = Iir2.lowPass(rate, sampleRate)
+    var dataFilter = Fir.boxcar(samplesPerSymbol.toInt)
+    var txlpf = Fir.lowPass(31,  shift * 0.5, sampleRate)
+    
+    var avgFilter = Iir2.lowPass(rate / 100, sampleRate)
 
-    override def rate_=(v: Double) =
+
+    def adjust =
         {
-        super.rate = v
-        sf = Fir.bandPass(13, -0.5*(shift+rate), -0.5*(shift-rate), sampleRate)
-        mf = Fir.bandPass(13,  0.5*(shift-rate),  0.5*(shift+rate), sampleRate)
+        sf = Fir.bandPass(13, -0.75 * shift, -0.25 * shift, sampleRate)
+        mf = Fir.bandPass(13,  0.25 * shift,  0.75 * shift, sampleRate)
         spaceFreq = Complex(twopi * (-shift * 0.5) / sampleRate)
         markFreq  = Complex(twopi * ( shift * 0.5) / sampleRate)
-        txFilter    = Fir.lowPass(21, rate, sampleRate)
-        status("rate: " + rate + "  samplespersymbol:" + samplesPerSymbol)
+        //dataFilter = Iir2.lowPass(rate, sampleRate)
+        dataFilter = Fir.boxcar(samplesPerSymbol.toInt)
+        txlpf = Fir.lowPass(31,  shift * 0.5, sampleRate)
         }
-
-    val dfilter = Fir.lowPass(21, rate, sampleRate)
+        
 
     
     val loHys = -2.0
     val hiHys =  2.0
 
-    var bit = false    
+    var sym     = false 
+    var lastSym = false   
     var samplesSinceTransition = 0
 
     var lastVal = Complex(0.0)
@@ -344,28 +364,35 @@ class PacketMode(par: App) extends Mode(par, 2400.0)
         val space  = sf.update(isample)
         val mark   = mf.update(isample)
         val sample = space + mark
-		val prod   = sample * lastVal.conj
-		lastVal    = sample
-		val demod  = prod.arg
-		val comp   = math.signum(demod) * 10.0
-		val sig    = dfilter.update(comp)
-		//println("sig:" + sig + "  comp:" + comp)
+        val prod   = sample * lastVal.conj
+        lastVal    = sample
+        val demod  = prod.arg
+        val comp   = math.signum(demod) * 10.0
+        val sig    = dataFilter.update(comp)
+        //trace("sig:" + sig + "  comp:" + comp)
 
-		par.updateScope(sig, 0)
+        par.updateScope(sig, 0)
 
-        //println("sig:" + sig)
-		if (sig > hiHys)
-		    {
-			bit = true
+        //trace("sig:" + sig)
+        if (sig > hiHys)
+            {
+            sym = true
             }
-		else if (sig < loHys)
-		    {
-			bit = false
-		    }
+        else if (sig < loHys)
+            {
+            sym = false
+            }
 
-		process(bit)
-		
-		sig
+		if (sym != lastSym)
+			samplesSinceTransition = 0
+		else
+			samplesSinceTransition += 1
+
+		lastSym = sym
+
+        process(sym)
+        
+        sig
 		}
  
     
@@ -504,16 +531,16 @@ class PacketMode(par: App) extends Mode(par, 2400.0)
         if (len < 14)
             return true
         val str = intToStr(data, 14, len-2)
-        trace("txt: " + str)
+        //trace("txt: " + str)
         crc.reset
         for (i <- 0 until len)
             crc.update(data(i))
         val v = crc.value
-        println("crc: %04x".format(v))
+        //trace("crc: %04x".format(v))
         if (v == 0xf0b8)
             {
             val p = Packet(data)
-            par.puttext(p.toString)
+            par.puttext(p.toString + "\n")
             }
         false
         }
@@ -604,7 +631,7 @@ class PacketMode(par: App) extends Mode(par, 2400.0)
         val pad = desiredOutput - buf.size
         for (i <- 0 until pad)
             buf += spaceFreq
-        val res = buf.toArray.map(txFilter.update)
+        //val res = buf.toArray.map(txFilter.update)
         None
         }
 

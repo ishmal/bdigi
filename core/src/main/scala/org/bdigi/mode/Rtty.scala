@@ -148,7 +148,7 @@ class Rtty(par: App) extends Mode(par, 1000.0)
     
     override val properties = new PropertyGroup(name,
         new RadioProperty("rate", "Rate", rates.map(_._1), "Baud rate for sending mark or space") ( idx => rate = rates(idx)._2 ),
-        new RadioProperty("shift", "Shift", shifts.map(_._1), "Spacing in herts between mark and space", 1) ( idx => shift = shifts(idx)._2 ),
+        new RadioProperty("shift", "Shift", shifts.map(_._1), "Spacing in hertz between mark and space", 1) ( idx => shift = shifts(idx)._2 ),
         new BooleanProperty("uos", "UoS", "Unshift on space")(b=> unshiftOnSpace = b),
         new BooleanProperty("inv", "Inv", "Invert mark and space for USB and LSB")(b=> inverted = b)
     )
@@ -232,11 +232,11 @@ class Rtty(par: App) extends Mode(par, 1000.0)
         val demod  = prod.arg
         val comp   = math.signum(demod) * 10.0
         val sig    = dataFilter.update(comp)
-        //println("sig:" + sig + "  comp:" + comp)
+        //trace("sig:" + sig + "  comp:" + comp)
 
         par.updateScope(sig, 0)
 
-        //println("sig:" + sig)
+        //trace("sig:" + sig)
         if (sig > hiHys)
             {
             bit = true
