@@ -18,6 +18,7 @@ object MyBuild extends Build {
         id = "bdigi",
         base = file("."),
         settings = buildSettings
+        
     ) aggregate (core, fx, andy)
 
     lazy val core = Project(
@@ -29,7 +30,10 @@ object MyBuild extends Build {
     lazy val fx = Project(
         id = "fx",
         base = file("fx"),
-        settings = buildSettings ++ assemblySettings
+        settings = buildSettings ++ assemblySettings ++ Seq(
+            unmanagedJars in Compile += Attributed.blank(
+                file(scala.util.Properties.javaHome) / "lib" / "jfxrt.jar")
+            )
     ) dependsOn core
 
 
