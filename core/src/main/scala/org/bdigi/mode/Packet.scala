@@ -273,7 +273,8 @@ object Packet
     private def getAddr(arr: Array[Int], offset:Int) : PacketAddr =
         {
         var buf = new StringBuilder
-        var call = new String(arr.slice(offset, offset+6).map(_.toByte & 127)).trim
+        val bytes = arr.slice(offset, offset+6).map(v=>(v >> 1).toByte)
+        var call = new String(bytes).trim
         val ssid = arr(offset+6) & 127
         new PacketAddr(call, ssid)
         }
