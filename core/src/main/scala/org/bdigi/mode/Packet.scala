@@ -288,7 +288,7 @@ object Packet
         val src  = getAddr(data, pos)
         pos += 7
         val rpts = scala.collection.mutable.ListBuffer[PacketAddr]()
-        while (rpts.size <= 8 && ((data(pos - 1) & 128) != 0) )
+        while (rpts.size < 8 && pos < data.size-7 && ((data(pos - 1) & 1) != 0) )
             {
             rpts.append(getAddr(data, pos))
             pos += 7
