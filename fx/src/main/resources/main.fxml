@@ -2,13 +2,11 @@
 
 <?import java.lang.*?>
 <?import java.net.*?>
-<?import java.util.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
   <children>
     <VBox prefHeight="368.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
@@ -21,7 +19,7 @@
             </Menu>
             <Menu mnemonicParsing="false" text="Edit">
               <items>
-                <MenuItem id="" mnemonicParsing="false" onAction="#doClear" text="Clear" fx:id="clearItem" />
+                <MenuItem id="" fx:id="clearItem" mnemonicParsing="false" onAction="#doClear" text="Clear" />
                 <MenuItem mnemonicParsing="false" onAction="#doPreferences" text="Preferences..." />
               </items>
             </Menu>
@@ -42,9 +40,9 @@
             <Insets />
           </VBox.margin>
         </AnchorPane>
-        <TabPane id="modeTab" fx:id="modePane" prefHeight="100.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="SOMETIMES" />
-        <VBox fx:id="consoleTextBox" prefHeight="78.0" prefWidth="600.0" />
-        <VBox fx:id="inputTextBox" prefHeight="52.0" prefWidth="600.0" />
+        <TabPane id="modeTab" fx:id="modePane" prefHeight="95.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="SOMETIMES" />
+        <VBox fx:id="consoleTextBox" prefHeight="140.0" prefWidth="600.0" />
+        <VBox fx:id="inputTextBox" prefHeight="80.0" prefWidth="600.0" />
         <ToolBar prefHeight="32.0" prefWidth="600.0">
           <items>
             <ToggleButton id="rxtxBtn" mnemonicParsing="false" onAction="#doRxTx" text="TX" />
