@@ -205,8 +205,11 @@ case class Packet(
             }
         else
             {
-            for (v <- info)
-                buf.append(",").append(v.toString)
+            //for (v <- info)
+            //    buf.append(",").append(v.toString)
+            buf.append("{" + info(0) + "," + info.size + "}")
+            val bytes = info.map(_.toByte)
+            buf.append(new String((bytes)))
             }
             
         buf.toString
@@ -275,7 +278,7 @@ object Packet
         var buf = new StringBuilder
         val bytes = arr.slice(offset, offset+6).map(v=>(v >> 1).toByte)
         var call = new String(bytes).trim
-        val ssid = arr(offset+6) & 127
+        val ssid = (arr(offset+6) >> 1) & 0xf
         new PacketAddr(call, ssid)
         }
 
@@ -288,7 +291,8 @@ object Packet
         val src  = getAddr(data, pos)
         pos += 7
         val rpts = scala.collection.mutable.ListBuffer[PacketAddr]()
-        while (rpts.size < 8 && pos < data.size-7 && ((data(pos - 1) & 1) != 0) )
+        //println("lastbyte:"+data(pos-1))
+        while (rpts.size < 8 && pos < data.size-7 && ((data(pos - 1) & 128) != 0) )
             {
             rpts.append(getAddr(data, pos))
             pos += 7
@@ -339,7 +343,7 @@ class PacketMode(par: App) extends Mode(par, 4800.0)
     )
     override val properties = new PropertyGroup(name,
         new RadioProperty("rate", "Rate", rates.map(_._1), "baud rate") (idx => rate = rates(idx)._2 ),
-        new RadioProperty("shift", "Shift", shifts.map(_._1), "Spacing in hertz between mark and space", 1) ( idx => shift = shifts(idx)._2 )
+        new RadioProperty("shift", "Shift", shifts.map(_._1), "Spacing in hertz between mark and space", 0) ( idx => shift = shifts(idx)._2 )
     )
         
     private var shiftVal = 200.0
