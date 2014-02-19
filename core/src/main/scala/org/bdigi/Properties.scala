@@ -134,16 +134,31 @@ case class PropertyBundle(name: String, groups: PropertyGroup*)
  */ 
 object Properties
 {
+    def load(ins: java.io.InputStream) : Option[Map[String,String]] =
+        {
+        try
+            {
+            val props = new java.util.Properties
+            props.load(ins)
+            val tuples = props.entrySet.map(a => (a.getKey.toString, a.getValue.toString))
+            Some(tuples.toMap.withDefaultValue(""))
+            }
+        catch
+            {
+            case e:Exception => Log.error("Properties.load: " + e)
+            None
+            }
+        }
+
+
     def loadFile(fname: String) : Option[Map[String,String]] =
         {
         try
             {
-            val file = new java.io.FileInputStream(fname)
-            val props = new java.util.Properties
-            props.load(file)
-            file.close
-            val tuples = props.entrySet.map(a => (a.getKey.toString, a.getValue.toString))
-            Some(tuples.toMap.withDefaultValue(""))
+            val ins = new java.io.FileInputStream(fname)
+            val props = load(ins)
+            ins.close
+            props
             }
         catch
             {
@@ -152,16 +167,30 @@ object Properties
             }
         }
 
-    def saveFile(sprops: Map[String,String], fname: String) : Boolean =
+    def save(sprops: Map[String,String], outs: java.io.OutputStream) : Boolean =
         {
         try
             {
             val jprops = new java.util.Properties
             for (a <- sprops) jprops.put(a._1, a._2)
-            val file = new java.io.FileOutputStream(fname)
-            jprops.store(file, "Scala Properties: " + fname)
-            file.close
+            jprops.store(outs, "Scala Properties")
             true
+            }
+        catch
+            {
+            case e:Exception => Log.error("Properties.save: " + e)
+            false
+            }
+        }    
+
+    def saveFile(sprops: Map[String,String], fname: String) : Boolean =
+        {
+        try
+            {
+            val outs = new java.io.FileOutputStream(fname)
+            val ret = save(sprops, outs)
+            outs.close
+            ret
             }
         catch
             {

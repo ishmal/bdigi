@@ -160,19 +160,21 @@ class App
     //# Settings
     //########################################
     
-    class Config 
+    
+    class Config() 
         {
-        private val propFile = "sdr.ini"
+        private val propFile = "bdigi.ini"
     
         var call              = ""
         var name              = ""
+        var qth               = ""
         var locator           = ""
         var audioInputDevice  = ""
         var audioOutputDevice = ""
 
-		def load =
+		def load(ins:  java.io.InputStream) =
 			{
-			val props = Properties.loadFile(propFile)
+			val props = Properties.load(ins)
 			if (props.isDefined)
 				{   
 				val p = props.get
@@ -183,12 +185,10 @@ class App
 				inputDevice       = AudioDevice.createInput(self, audioInputDevice)
 				inputDevice.foreach(_.open)
 				audioOutputDevice = p("audioOutputDevice")
-				outputDevice      = AudioDevice.createOutput(self, audioOutputDevice)
-				outputDevice.foreach(_.open)
 				}
 			}
 
-		def save =
+		def save(outs: java.io.OutputStream) =
 			{
 			val p = Map(
 				"call" -> call,
@@ -197,7 +197,7 @@ class App
 				"audioInputDevice" -> audioInputDevice,
 				"audioOutputDevice" -> audioOutputDevice
 				)
-			if (!Properties.saveFile(p, propFile))
+			if (!Properties.save(p, outs))
 				{
 				Log.error("configSave failed")
 				}
@@ -206,6 +206,42 @@ class App
         }
     
     val config = new Config
+
+    def configLoad : Boolean =
+        {
+        try
+            {
+            val ins = new java.io.FileInputStream("bdigi.ini")
+            config.load(ins)
+            ins.close
+			inputDevice = AudioDevice.createInput(self, config.audioInputDevice)
+			inputDevice.foreach(_.open)
+    		outputDevice = AudioDevice.createOutput(self, config.audioOutputDevice)
+			outputDevice.foreach(_.open)
+			true
+            }
+        catch 
+            {
+            case e: Exception => Log.error("configLoad failed: " + e)
+                false
+            }
+        }
+
+    def configSave : Boolean =
+        {
+        try
+            {
+            val outs = new java.io.FileOutputStream("bdigi.ini")
+            config.save(outs)
+            outs.close
+            true
+            }
+        catch 
+            {
+            case e: Exception => Log.error("configSave failed: " + e)
+                false
+            }
+        }
 
 
     //########################################
@@ -301,7 +337,7 @@ class App
     /**
      * Let's set things up
      */
-    config.load
+    configLoad
     
     receive
 

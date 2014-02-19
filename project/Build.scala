@@ -30,10 +30,7 @@ object MyBuild extends Build {
     lazy val fx = Project(
         id = "fx",
         base = file("fx"),
-        settings = buildSettings ++ assemblySettings ++ Seq(
-            unmanagedJars in Compile += Attributed.blank(
-                file(scala.util.Properties.javaHome) / "lib" / "jfxrt.jar")
-            )
+        settings = buildSettings ++ assemblySettings
     ) dependsOn core
 
 

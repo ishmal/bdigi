@@ -31,8 +31,12 @@ import android.os.Bundle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
 
 import android.os.Bundle;
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -49,7 +53,52 @@ import android.widget.EditText;
 import org.bdigi.*;
 
 
+
+
 public class MainActivity extends FragmentActivity {
+
+
+class MainApp extends App {
+
+    @Override
+    public boolean configLoad()
+        {
+        try
+            {
+            FileInputStream ins = openFileInput("bdigi.ini");
+            config().load(ins);
+            ins.close();
+			return true;
+            }
+        catch (Exception e)
+            {
+            org.bdigi.Log.error("configLoad failed: " + e);
+            return false;
+            }
+        }
+
+    @Override
+    public boolean configSave()
+        {
+        try
+            {
+            FileOutputStream outs = openFileOutput("bdigi.ini", Context.MODE_PRIVATE);
+            config().save(outs);
+            outs.close();
+            return true;
+            }
+        catch (Exception e)
+            {
+            org.bdigi.Log.error("configSave failed: " + e);
+            return false;
+            }
+        }
+
+
+
+
+}
+
 	
 	private ViewPager viewPager;
 	private MyAdapter adapter;
@@ -108,7 +157,10 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public void saveConfig(View view) {
-	    String call = getInputText(R.id.cfg_call);
+	    String call    = getInputText(R.id.cfg_call);
+	    String name    = getInputText(R.id.cfg_name);
+	    String qth     = getInputText(R.id.cfg_qth);
+	    String locator = getInputText(R.id.cfg_locator);
 	    trace("call:" + call);
 	}
 	
