@@ -29,22 +29,116 @@ package org.bdigi.andy;
 import android.app.Activity;
 import android.os.Bundle;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+
 import org.bdigi.*;
 
-public class MainActivity extends Activity {
-    /**
-     * Called when the activity is first created.
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+
+public class MainActivity extends FragmentActivity {
+	
+	private ViewPager viewPager;
+	private MyAdapter adapter;
+	private ArrayList<LayoutFragment> fragments;
+	private static MainActivity _instance;
+	
+	public static MainActivity getInstance() {
+		return _instance;
+	}
+	
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		_instance = this;
+		setContentView(R.layout.activity_main);
+		viewPager = (ViewPager) findViewById (R.id.viewPager);
+		PageListener pl = new PageListener();
+		viewPager.setOnPageChangeListener(pl);
+		fragments = getFragments();
+		adapter = new MyAdapter(getSupportFragmentManager(), fragments);
+		viewPager.setAdapter(adapter);
+	}
+	
+	private ArrayList<LayoutFragment> getFragments() {
+		ArrayList<LayoutFragment> xs = new ArrayList<LayoutFragment>();
+		xs.add(LayoutFragment.getInstance(MainActivity.this, "Home",   R.layout.home));
+		xs.add(LayoutFragment.getInstance(MainActivity.this, "Config", R.layout.config));
+		return xs;		
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {
+	        case R.id.action_home:
+	            viewPager.setCurrentItem(0);
+	            return true;
+	        case R.id.action_config:
+	        	viewPager.setCurrentItem(1);
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	void trace(String msg) {
+		Log.i("bdigi", msg);
+	}
+	
+	void error(String msg) {
+		Log.e("bdigi", msg);
+	}
+	
+	void error(String msg, Throwable e) {
+		Log.e("bdigi", msg, e);
+	}
+	
+	private class PageListener extends SimpleOnPageChangeListener {
+        public void onPageSelected(int position) {
+            LayoutFragment frag = fragments.get(position);
+            setTitle("bdigi : " + frag.name);
+        }
     }
+	
+	class MyAdapter extends FragmentPagerAdapter
+	{
+		ArrayList<LayoutFragment> fragments;
 
+		public MyAdapter(FragmentManager fm, ArrayList<LayoutFragment> fragments) {
+			super(fm);
+			this.fragments = fragments;
+		}
 
-class AndyApp extends App {
-}
+		@Override
+        public int getCount() {
+            return fragments.size();
+        }
 
+        @Override
+        public Fragment getItem(int position) {
+            return fragments.get(position);
+        }
+	}
+	
 
 
 }
