@@ -4,5 +4,53 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
         >
+
+<TextView android:id="@+id/cfg_call_lbl"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/cfg_call_lbl" />
+
+<EditText android:id="@+id/cfg_call"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/cfg_call" />
+
+<TextView android:id="@+id/cfg_name_lbl"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/cfg_name_lbl" />
+
+<EditText android:id="@+id/cfg_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/cfg_name" />
+
+<TextView android:id="@+id/cfg_qth_lbl"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/cfg_qth_lbl" />
+
+<EditText android:id="@+id/cfg_qth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/cfg_qth" />
+
+<TextView android:id="@+id/cfg_locator_lbl"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/cfg_locator_lbl" />
+
+<EditText android:id="@+id/cfg_locator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/cfg_locator" />
+
+
+<Button android:id="@+id/cfg_save_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cfg_save_btn"
+        android:onClick="saveConfig" />
+        
 </LinearLayout>
 

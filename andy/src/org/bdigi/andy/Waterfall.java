@@ -37,14 +37,6 @@ import android.widget.FrameLayout;
 
 class Waterfall extends FrameLayout
 {
-    private MainActivity par;
-    private DrawArea drawArea;
-
-    public Waterfall(MainActivity par) {
-        super(par);
-        this.par = par;
-        drawArea = new DrawArea(100,100);
-        }
 
 class DrawArea extends SurfaceView implements SurfaceHolder.Callback
 {
@@ -89,13 +81,6 @@ class DrawArea extends SurfaceView implements SurfaceHolder.Callback
         }
         return colors;
     }
-
-
-
-
-	
-
-
 	
 	private void updateBuffer(double ps[]) {
 		/**
@@ -142,8 +127,19 @@ class DrawArea extends SurfaceView implements SurfaceHolder.Callback
 	    {
 	    }
 	        					
-} //DrawArea
+} //inner class DrawArea
 
+
+
+
+    private MainActivity par;
+    private DrawArea drawArea;
+
+    public Waterfall(MainActivity par) {
+        super(par);
+        this.par = par;
+        drawArea = new DrawArea(100,100);
+        }
 
     @Override public void onSizeChanged(int x, int y, int oldx, int oldy)
         {

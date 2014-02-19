@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">bdigi</string>
+    <string name="cfg_call_lbl">Callsign</string>
+    <string name="cfg_call">Callsign</string>
+    <string name="cfg_name_lbl">Name</string>
+    <string name="cfg_name">Name</string>
+    <string name="cfg_qth_lbl">QTH</string>
+    <string name="cfg_qth">QTH</string>
+    <string name="cfg_locator_lbl">Locator</string>
+    <string name="cfg_locator">Locator</string>
+    <string name="cfg_save_btn">Save</string>
 </resources>

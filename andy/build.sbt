@@ -11,4 +11,5 @@ run <<= run in Android
  
 install <<= install in Android
 
+libraryDependencies += "com.google.android" % "support-v4" % "r7"
 

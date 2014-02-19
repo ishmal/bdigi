@@ -33,6 +33,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+/**
+ * This is a simple Fragment that simply holds a layout.  This allows the
+ * view pager to switch layouts
+ */
 public class LayoutFragment extends Fragment {
 
 	//parent

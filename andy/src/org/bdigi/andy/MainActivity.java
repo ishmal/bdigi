@@ -43,6 +43,8 @@ import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 
 import org.bdigi.*;
 
@@ -100,6 +102,16 @@ public class MainActivity extends FragmentActivity {
 	    }
 	}
 	
+	private String getInputText(int id) {
+	    EditText text = (EditText) findViewById(id);
+	    return text.getText().toString();
+	}
+	
+	public void saveConfig(View view) {
+	    String call = getInputText(R.id.cfg_call);
+	    trace("call:" + call);
+	}
+	
 	void trace(String msg) {
 		Log.i("bdigi", msg);
 	}
@@ -115,7 +127,9 @@ public class MainActivity extends FragmentActivity {
 	private class PageListener extends SimpleOnPageChangeListener {
         public void onPageSelected(int position) {
             LayoutFragment frag = fragments.get(position);
-            setTitle("bdigi : " + frag.name);
+            String msg = "bdigi : " + frag.name;
+            setTitle(msg);
+            trace(msg);
         }
     }
 	
