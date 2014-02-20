@@ -86,7 +86,6 @@ class App
         println("App error: " + msg + " : " + e)
         }
 
-    val wf = new Waterfall(this, 4096,  sampleRate, 3000.0)
 
     //########################################
     //# Devices
@@ -131,6 +130,8 @@ class App
         if (inputDevice.isDefined) inputDevice.get.sampleRate else 7350.0
         }
 		
+    val wf = new Waterfall(this, 4096,  sampleRate, 2500.0)
+
 	def frequency =
 	    mode.frequency
 

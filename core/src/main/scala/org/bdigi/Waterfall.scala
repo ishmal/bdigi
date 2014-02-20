@@ -34,18 +34,18 @@ package org.bdigi
 class Waterfall(par: App, N: Int, sampleRate: Double, maxFreq: Double)
 {
         private val frame = Array.fill(N)(0.0)
-        private val bins = (1.0 * maxFreq / sampleRate * N).toInt
+        private val bins = (maxFreq / sampleRate * N).toInt
         par.trace("wf samplerate: " + sampleRate + "  bins:" + bins)
         private val window = Window.Hamming(N)
     
         private val length = 5
-        private val wf = Array.ofDim[Int](bins, length)
+        private val wf = Array.ofDim[Int](length, bins)
         private var wfptr = 0     
             
         /**
          * Make a palette. tweak this often
          */                 
-        private val colors = Array.tabulate(256)( i=>
+        private val colors = Array.tabulate(256)( i =>
             {
             val r = if (i < 170) 0 else (i-170) * 3
             val g = if (i <  85) 0 else if (i < 170) (i-85) * 3 else 255
@@ -86,7 +86,7 @@ class Waterfall(par: App, N: Int, sampleRate: Double, maxFreq: Double)
                 for (i <- 0 until bins)
                     {
                     val p = ps(i)
-                    val v = MathUtil.log1p(p) * 20.0
+                    val v = MathUtil.log1p(p) * 30.0
                     val colidx = v.toInt & 0xff
                     val col = colors(colidx)
                     row(i) = colors(colidx)
