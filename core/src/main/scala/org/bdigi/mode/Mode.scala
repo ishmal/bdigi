@@ -41,9 +41,9 @@ class Mode(var par: App, val sampleRateHint: Double)
     def this(par: App) = this(par, par.sampleRate)
     
     
-    def error(msg: String) = Log.error(msg)
+    def error(msg: String) = par.error(msg)
 
-    def trace(msg: String) = Log.trace(msg)
+    def trace(msg: String) = par.trace(msg)
 
     /**
      * These two methods are used for starting or

@@ -86,6 +86,8 @@ class App
         println("App error: " + msg + " : " + e)
         }
 
+    val wf = new Waterfall(this, 4096,  sampleRate, 3000.0)
+
     //########################################
     //# Devices
     //########################################
@@ -289,7 +291,7 @@ class App
                     {
                     for (v <- res.get)
                         {
-                        updateSpectrum(v)
+                        wf.update(v)(ps => updateSpectrum(ps))
 					    mode.receive(v)
                         }
                     }
@@ -385,7 +387,7 @@ class App
     def updateScope(x: Double, y: Double) =
         {}
 
-    def updateSpectrum(data: Double) =
+    def updateSpectrum(pixels: Array[Int]) =
         {}
     
     def adjust =

@@ -120,6 +120,41 @@ class MainApp extends App {
             }
         }
 
+    /**
+     * Override these in your client code, especially for a GUI
+     */
+
+    @Override
+    public void status(String msg)
+        {
+        }
+    
+    @Override
+    public void puttext(String msg)
+        {
+        }
+    
+    @Override
+    public String gettext()
+        {
+        return "";
+        }
+        
+    @Override
+    public void updateScope(double x, double y)
+        {
+        }
+
+    @Override
+    public void updateSpectrum(int ps[])
+        {
+        }
+    
+    @Override
+    public void adjust()
+        {
+        }
+
 }
 
 	

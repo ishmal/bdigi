@@ -29,7 +29,7 @@ package org.bdigi.fx
 //import java.awt.{Color,Dimension,Image,Point,RenderingHints}
 //import java.awt.geom.{Rectangle2D}
 
-import org.bdigi.{App, Complex, Constants, DFft, Log, MathUtil, Window}
+import org.bdigi.{App, Complex, Constants, DFft, MathUtil, Window}
 
 import javafx.application.Platform
 import javafx.beans.value.{ChangeListener,ObservableValue}
@@ -55,7 +55,7 @@ class AudioWaterfall(par: App) extends Pane
         val N = 4096
         val frame = Array.fill(N)(0.0)
         val bins = (1.0 * maxFreq / par.sampleRate * N).toInt
-        Log.trace("wf samplerate: " + par.sampleRate + "  bins:" + bins)
+        par.trace("wf samplerate: " + par.sampleRate + "  bins:" + bins)
         val window = Window.Hamming(N)
         val iwidth = width.toInt
         val iheight = height.toInt
@@ -123,6 +123,24 @@ class AudioWaterfall(par: App) extends Pane
                 val colidx = v.toInt & 0xff
                 val col = colors(colidx)
                 pix(pixptr) = colors(colidx)
+                pixptr += 1
+                }
+            //trace("iw:" + iwidth + "  ih:" + iheight + "  pix:" + pix.size + " pslen:" + pslen)
+            writer.setPixels(0, 0, iwidth, iheight, format, pix, 0, iwidth)
+            if (!busy)
+                Platform.runLater(refresher)
+            }
+            
+            
+        def updatePix(ps: Array[Int]) =
+            {
+            val pix = pixels
+            System.arraycopy(pix, iwidth, pix, 0, lastRow)
+            var pixptr = lastRow
+            for (i <- 0 until iwidth)
+                {
+                val p = ps(psIndices(i))
+                pix(pixptr) = p
                 pixptr += 1
                 }
             //trace("iw:" + iwidth + "  ih:" + iheight + "  pix:" + pix.size + " pslen:" + pslen)
@@ -377,8 +395,8 @@ class AudioWaterfall(par: App) extends Pane
         getChildren.addAll(wf, tuner, scope)
         }
 
-    def update(v: Double) =
-        wf.update(v)
+    def update(ps: Array[Int]) =
+        wf.updatePix(ps)
 
     def updateScope(x: Double, y: Double) =
         scope.update(x, y)

@@ -31,15 +31,15 @@ package org.bdigi
 /**
  * This is a GUI-less waterfall that can be used for various purposes
  */
-class Waterfall(par: App, width: Int, length: Int, N: Int, sampleRate: Double, maxFreq: Double)
+class Waterfall(par: App, N: Int, sampleRate: Double, maxFreq: Double)
 {
-
         private val frame = Array.fill(N)(0.0)
         private val bins = (1.0 * maxFreq / sampleRate * N).toInt
         par.trace("wf samplerate: " + sampleRate + "  bins:" + bins)
         private val window = Window.Hamming(N)
     
-        private val wf = Array.ofDim[Int](width, length)
+        private val length = 5
+        private val wf = Array.ofDim[Int](bins, length)
         private var wfptr = 0     
             
         /**
@@ -56,28 +56,7 @@ class Waterfall(par: App, width: Int, length: Int, N: Int, sampleRate: Double, m
             col = (col << 8) + b
             col
             })
-            
-        /*Scale the power spectrum bins onto the output width.  Do once & reuse. */
-        private val psIndices = Array.tabulate(width)(_ * bins / width)
-                
-            
-        private def renderToBuffer(ps: Array[Double]) =
-            {
-            val pslen = ps.size
-            val row = wf(wfptr)
-            wfptr = (wfptr + 1) % length
-
-            for (i <- 0 until width)
-                {
-                val p = ps(psIndices(i))
-				val v = MathUtil.log1p(p) * 20.0
-				val colidx = v.toInt & 0xff
-				val col = colors(colidx)
-                row(i) = colors(colidx)
-                }
-            }
-        
-        
+                          
         private val trans = new DFft(N)
         
         private var framePtr = 0
@@ -86,7 +65,7 @@ class Waterfall(par: App, width: Int, length: Int, N: Int, sampleRate: Double, m
         
         private val slidingbuf = Array.ofDim[Double](N)
         
-        def update(v: Double) =
+        def update(v: Double)(f: (Array[Int]) => Unit) =
             {
             frame(framePtr) = v
             framePtr = (framePtr + 1) % N
@@ -101,7 +80,18 @@ class Waterfall(par: App, width: Int, length: Int, N: Int, sampleRate: Double, m
                     fp = (fp + 1) % N
                     }
                 val ps = trans.powerSpectrum(slidingbuf, bins)
-                renderToBuffer(ps)
+                val row = wf(wfptr)
+                wfptr = (wfptr + 1) % length
+
+                for (i <- 0 until bins)
+                    {
+                    val p = ps(i)
+                    val v = MathUtil.log1p(p) * 20.0
+                    val colidx = v.toInt & 0xff
+                    val col = colors(colidx)
+                    row(i) = colors(colidx)
+                    }
+                f(row)
                 }
             }
             

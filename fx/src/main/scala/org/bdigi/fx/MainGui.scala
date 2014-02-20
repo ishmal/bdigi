@@ -48,7 +48,7 @@ import scala.collection.JavaConversions._
 
 import org.bdigi._
 
-class Console2 extends TextArea
+class Console2(par: App) extends TextArea
 {
     setEditable(false)
     
@@ -70,7 +70,7 @@ class Console2 extends TextArea
                 }
             catch
                 {
-                case e: Exception => Log.error("Console 2: " + e)
+                case e: Exception => par.error("Console 2: ", e)
                   e.printStackTrace
                 }
             busy = false
@@ -102,7 +102,7 @@ class Console2 extends TextArea
 
 
 
-class InputText2(rows: Int, cols: Int) extends TextArea
+class InputText2(par: App, rows: Int, cols: Int) extends TextArea
 {
     setPrefRowCount(rows)
     setPrefColumnCount(cols)
@@ -130,11 +130,11 @@ class InputText2(rows: Int, cols: Int) extends TextArea
         }
 }
 
-class LogDialog2 extends Stage
+class LogDialog2(par: App) extends Stage
 {
     setTitle("Log")
     val vbox = new VBox
-    val console = new Console2
+    val console = new Console2(par)
     vbox.getChildren().addAll(console)
     val scene = new Scene(vbox)
     setScene(scene)
@@ -248,10 +248,10 @@ class MainController(stage: Stage) extends App
     
     
     @FXML var consoleTextBox : VBox = _
-    val consoleText = new Console2
+    val consoleText = new Console2(this)
 
     @FXML var inputTextBox : VBox = _
-    val inputText = new InputText2(20, 80)
+    val inputText = new InputText2(this, 20, 80)
     
     val aboutDialog = new Stage
         {
@@ -262,7 +262,7 @@ class MainController(stage: Stage) extends App
         
     val prefsDialog = new PrefsDialog(this)
         
-    val logDialog = new LogDialog2
+    val logDialog = new LogDialog2(this)
     logDialog.puttext("Hello, world")
     
     stage.setOnCloseRequest(new EventHandler[WindowEvent]
@@ -348,10 +348,10 @@ class MainController(stage: Stage) extends App
             logDialog.puttext(msg + "\n")
         }
 
-    override def updateSpectrum(v: Double) =
+    override def updateSpectrum(ps:  Array[Int]) =
         {
         if (audioWaterfall != null)
-            audioWaterfall.update(v)
+            audioWaterfall.update(ps)
         }
     
     override def adjust =
