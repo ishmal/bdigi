@@ -6,7 +6,7 @@
         >
     <FrameLayout
         class="org.bdigi.andy.Waterfall" 
-        id="@+id/waterfall"
+        android:id="@+id/waterfall"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:padding="10dip"

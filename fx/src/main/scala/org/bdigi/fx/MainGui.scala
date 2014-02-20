@@ -204,7 +204,7 @@ class PrefsDialog(par: App) extends Stage
             par.setOutputDevice(outp) 
             }
         par.config.audioOutputDevice = outp
-        par.config.save
+        par.configSave
         close
         }
 

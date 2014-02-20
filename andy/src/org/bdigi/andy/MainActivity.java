@@ -60,6 +60,32 @@ public class MainActivity extends FragmentActivity {
 
 class MainApp extends App {
 
+    //########################################
+    //# Logging
+    //########################################
+    
+    @Override
+    public void trace(String msg)
+        {
+        MainActivity.this.trace(msg);
+        }
+
+    @Override
+    public void error(String msg)
+        {
+        MainActivity.this.error(msg);
+        }
+
+    @Override
+	public void error(String msg, Throwable e) 
+	    {
+		MainActivity.this.error(msg, e);
+	    }
+	
+
+    //########################################
+    //# Config
+    //########################################
     @Override
     public boolean configLoad()
         {
@@ -72,7 +98,7 @@ class MainApp extends App {
             }
         catch (Exception e)
             {
-            org.bdigi.Log.error("configLoad failed: " + e);
+            error("configLoad failed: " + e);
             return false;
             }
         }
@@ -89,13 +115,10 @@ class MainApp extends App {
             }
         catch (Exception e)
             {
-            org.bdigi.Log.error("configSave failed: " + e);
+            error("configSave failed: " + e);
             return false;
             }
         }
-
-
-
 
 }
 
@@ -104,16 +127,37 @@ class MainApp extends App {
 	private MyAdapter adapter;
 	private ArrayList<LayoutFragment> fragments;
 	private static MainActivity _instance;
-	
+	private MainApp _app;
+
 	public static MainActivity getInstance() {
 		return _instance;
 	}
+
+	public App getApp() {
+		return _app;
+	}
 	
-	
+    public void trace(String msg)
+        {
+        Log.i("bdigi", msg);
+        }
+
+    public void error(String msg)
+        {
+        Log.e("bdigi", msg);
+        }
+
+	public void error(String msg, Throwable e) 
+	    {
+		Log.e("bdigi", msg, e);
+	    }
+
+		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		_instance = this;
+		_app = new MainApp();
 		setContentView(R.layout.activity_main);
 		viewPager = (ViewPager) findViewById (R.id.viewPager);
 		PageListener pl = new PageListener();
@@ -162,18 +206,6 @@ class MainApp extends App {
 	    String qth     = getInputText(R.id.cfg_qth);
 	    String locator = getInputText(R.id.cfg_locator);
 	    trace("call:" + call);
-	}
-	
-	void trace(String msg) {
-		Log.i("bdigi", msg);
-	}
-	
-	void error(String msg) {
-		Log.e("bdigi", msg);
-	}
-	
-	void error(String msg, Throwable e) {
-		Log.e("bdigi", msg, e);
 	}
 	
 	private class PageListener extends SimpleOnPageChangeListener {

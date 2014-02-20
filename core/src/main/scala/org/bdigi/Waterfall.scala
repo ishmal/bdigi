@@ -31,12 +31,12 @@ package org.bdigi
 /**
  * This is a GUI-less waterfall that can be used for various purposes
  */
-class Waterfall(width: Int, length: Int, N: Int, sampleRate: Double, maxFreq: Double)
+class Waterfall(par: App, width: Int, length: Int, N: Int, sampleRate: Double, maxFreq: Double)
 {
 
         private val frame = Array.fill(N)(0.0)
         private val bins = (1.0 * maxFreq / sampleRate * N).toInt
-        Log.trace("wf samplerate: " + sampleRate + "  bins:" + bins)
+        par.trace("wf samplerate: " + sampleRate + "  bins:" + bins)
         private val window = Window.Hamming(N)
     
         private val wf = Array.ofDim[Int](width, length)

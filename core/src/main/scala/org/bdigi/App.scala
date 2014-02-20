@@ -68,6 +68,25 @@ class App
     val self = this
 		
     //########################################
+    //# Logging
+    //########################################
+    
+    def trace(msg: String) =
+        {
+        println("App: " + msg)
+        }
+
+    def error(msg: String) =
+        {
+        println("App error: " + msg)
+        }
+
+    def error(msg: String, e: Throwable)
+        {
+        println("App error: " + msg + " : " + e)
+        }
+
+    //########################################
     //# Devices
     //########################################
 
@@ -199,7 +218,7 @@ class App
 				)
 			if (!Properties.save(p, outs))
 				{
-				Log.error("configSave failed")
+				error("configSave failed")
 				}
 			}
 
@@ -222,7 +241,7 @@ class App
             }
         catch 
             {
-            case e: Exception => Log.error("configLoad failed: " + e)
+            case e: Exception => error("configLoad failed: " + e)
                 false
             }
         }
@@ -238,7 +257,7 @@ class App
             }
         catch 
             {
-            case e: Exception => Log.error("configSave failed: " + e)
+            case e: Exception => error("configSave failed: " + e)
                 false
             }
         }
@@ -314,7 +333,7 @@ class App
                     }
                 else
                     {
-                    //Log.trace("data:" + res.get.size)
+                    //trace("data:" + res.get.size)
                     outputDevice.get.write(res.get)
                     }
                 }

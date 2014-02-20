@@ -127,11 +127,11 @@ class JavaAudioInput(par: App, adi: AudioDeviceInfo) extends AudioInputDevice
             for (i <- 0 until numBytes by 2)
                 {
                 val dval = bytesToDouble(buf(i) & 0xff)(buf(i+1) & 0xff)
-                //trace("dval:" + dval)
+                //par.trace("dval:" + dval)
                 
                 resampler.decimate(dval)( v =>
                     {
-                    //trace("v:" + v)
+                    //par.trace("v:" + v)
                     vbuf(vptr) = v
                     vptr += 1
                     })
@@ -189,7 +189,7 @@ class JavaAudioOutput(par: App, adi: AudioDeviceInfo) extends AudioOutputDevice
                 val iv = (v * 32767.0).toInt
                 val hi = ((iv >> 8) & 0xff).toByte
                 val lo = ((iv     ) & 0xff).toByte
-                //trace("iv:" + iv)
+                //par.trace("iv:" + iv)
                 buf(bptr) = hi
                 bptr += 1
                 buf(bptr) = lo
@@ -276,7 +276,7 @@ object AudioDevice
             }
         else
             {
-            Log.error("Input audio device not found: " + name)
+            par.error("Input audio device not found: " + name)
             None
             }
         }
@@ -293,7 +293,7 @@ object AudioDevice
             }
         else
             {
-            Log.error("Output audio device not found: " + name)
+            par.error("Output audio device not found: " + name)
             None
             }
         }

@@ -85,7 +85,7 @@ case class PropertyBundle(name: String, groups: PropertyGroup*)
             }
         catch
             {
-            case e:Exception => Log.error("PropertyBundle.loadFile: " + e)
+            case e:Exception => println("PropertyBundle.loadFile: " + e)
             false
             }
         }
@@ -113,7 +113,7 @@ case class PropertyBundle(name: String, groups: PropertyGroup*)
             }
         catch
             {
-            case e:Exception => Log.error("PropertyBundle.saveFile: " + e)
+            case e:Exception => println("PropertyBundle.saveFile: " + e)
             false
             }
         }    
@@ -145,7 +145,7 @@ object Properties
             }
         catch
             {
-            case e:Exception => Log.error("Properties.load: " + e)
+            case e:Exception => println("Properties.load: " + e)
             None
             }
         }
@@ -162,7 +162,7 @@ object Properties
             }
         catch
             {
-            case e:Exception => Log.error("Properties.loadFile: " + e)
+            case e:Exception => println("Properties.loadFile: " + e)
             None
             }
         }
@@ -178,7 +178,7 @@ object Properties
             }
         catch
             {
-            case e:Exception => Log.error("Properties.save: " + e)
+            case e:Exception => println("Properties.save: " + e)
             false
             }
         }    
@@ -194,7 +194,7 @@ object Properties
             }
         catch
             {
-            case e:Exception => Log.error("Properties.saveFile: " + e)
+            case e:Exception => println("Properties.saveFile: " + e)
             false
             }
         }    
