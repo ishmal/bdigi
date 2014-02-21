@@ -130,7 +130,7 @@ class App
         if (inputDevice.isDefined) inputDevice.get.sampleRate else 7350.0
         }
 		
-    val wf = new Waterfall(this, 4096,  sampleRate, 2500.0)
+    val wf = new WaterfallFactory(this, 2048,  sampleRate, 2500.0)
 
 	def frequency =
 	    mode.frequency

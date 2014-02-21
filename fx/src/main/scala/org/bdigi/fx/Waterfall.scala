@@ -52,21 +52,16 @@ class AudioWaterfall(par: App) extends Pane
 
     class Waterfall(width: Double, height: Double) extends Canvas(width, height)
         {
-        val N = 4096
-        val frame = Array.fill(N)(0.0)
-        val bins = (1.0 * maxFreq / par.sampleRate * N).toInt
-        par.trace("wf samplerate: " + par.sampleRate + "  bins:" + bins)
-        val window = Window.Hamming(N)
         val iwidth = width.toInt
         val iheight = height.toInt
     
-        val img = new WritableImage(iwidth, iheight)
-        val nrPix = iwidth * iheight
-        val pixels = Array.ofDim[Int](nrPix)
+        val img     = new WritableImage(iwidth, iheight)
+        val nrPix   = iwidth * iheight
+        val pixels  = Array.ofDim[Int](nrPix)
         val lastRow = nrPix - iwidth
-        val writer = img.getPixelWriter
-        val format = PixelFormat.getIntArgbInstance
-        val g2d = getGraphicsContext2D
+        val writer  = img.getPixelWriter
+        val format  = PixelFormat.getIntArgbInstance
+        val g2d     = getGraphicsContext2D
                 
         private val colors = Array.tabulate(256)( i =>
             {
@@ -108,32 +103,17 @@ class AudioWaterfall(par: App) extends Pane
             }
     
         /*Scale the power spectrum bins onto the output width.  Do once & reuse. */
-        private val psIndices = Array.tabulate(iwidth)(_ * bins / iwidth)
+        private var pslen = -1
+        private var psIndices = Array.fill(iwidth)(0)
                 
             
-        def redraw(ps: Array[Double]) =
+        def update(ps: Array[Int]) =
             {
-            val pix = pixels
-            System.arraycopy(pix, iwidth, pix, 0, lastRow)
-            var pixptr = lastRow
-            for (i <- 0 until iwidth)
+            if (pslen != ps.length)
                 {
-                val p = ps(psIndices(i))
-                val v = MathUtil.log1p(p) * 40.0
-                val colidx = v.toInt & 0xff
-                val col = colors(colidx)
-                pix(pixptr) = colors(colidx)
-                pixptr += 1
+                pslen = ps.length
+                psIndices = Array.tabulate(iwidth)(_ * pslen / iwidth)
                 }
-            //trace("iw:" + iwidth + "  ih:" + iheight + "  pix:" + pix.size + " pslen:" + pslen)
-            writer.setPixels(0, 0, iwidth, iheight, format, pix, 0, iwidth)
-            if (!busy)
-                Platform.runLater(refresher)
-            }
-            
-            
-        def updatePix(ps: Array[Int]) =
-            {
             val pix = pixels
             System.arraycopy(pix, iwidth, pix, 0, lastRow)
             var pixptr = lastRow
@@ -147,46 +127,6 @@ class AudioWaterfall(par: App) extends Pane
             writer.setPixels(0, 0, iwidth, iheight, format, pix, 0, iwidth)
             if (!busy)
                 Platform.runLater(refresher)
-            }
-        
-        
-        val trans = new DFft(N)
-        
-        private var framePtr = 0
-        private var frameCtr = 0
-        private val SUBN = N/5
-        
-        private val slidingbuf = Array.ofDim[Double](N)
-        
-        def update2(v: Double) =
-            {
-            frame(framePtr) = v * window(framePtr)
-            framePtr += 1
-            if (framePtr >= N)
-                {
-                framePtr = 0
-                val ps = trans.powerSpectrum(frame, bins)
-                redraw(ps)
-                }
-            }
-            
-        def update(v: Double) =
-            {
-            frame(framePtr) = v
-            framePtr = (framePtr + 1) % N
-            frameCtr += 1
-            if (frameCtr >= SUBN)
-                {
-                frameCtr = 0
-                var fp = (framePtr + 1) % N
-                for (i <- 0 until N)
-                    {
-                    slidingbuf(i) = frame(fp)  * window(i)
-                    fp = (fp + 1) % N
-                    }
-                val ps = trans.powerSpectrum(slidingbuf, bins)
-                redraw(ps)
-                }
             }
             
     
@@ -396,7 +336,7 @@ class AudioWaterfall(par: App) extends Pane
         }
 
     def update(ps: Array[Int]) =
-        wf.updatePix(ps)
+        wf.update(ps)
 
     def updateScope(x: Double, y: Double) =
         scope.update(x, y)

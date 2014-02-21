@@ -652,6 +652,21 @@ class DFft(N: Int)
         {
         powerSpectrum(in, in.size / 2)
         }
+
+    def intPowerSpectrum(in: Array[Double], bins: Int) : Array[Int] =
+        {
+        forward(in)
+        var idx = 0
+        val out = Array.fill(bins)
+            {
+            val r = (in(idx) * 10.0).toInt
+            val i = (in(idx+1) * 10.0).toInt
+            idx += 2
+            r * r + i * i
+            }
+        out
+        }
+        
 }
 
 
