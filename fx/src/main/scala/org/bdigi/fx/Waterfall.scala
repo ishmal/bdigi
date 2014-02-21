@@ -32,13 +32,15 @@ package org.bdigi.fx
 import org.bdigi.{App, Complex, Constants, DFft, MathUtil, Window}
 
 import javafx.application.Platform
+import javafx.animation.{Animation, KeyFrame, TimelineBuilder}
+import javafx.util.Duration
 import javafx.beans.value.{ChangeListener,ObservableValue}
 import javafx.scene.layout.{AnchorPane,HBox,VBox,Pane}
 import javafx.scene.canvas.{Canvas, GraphicsContext}
 import javafx.scene.image.{ImageView,WritableImage,PixelFormat}
 import javafx.scene.shape.{Rectangle}
 import javafx.scene.paint.Color
-import javafx.event.{Event, EventHandler}
+import javafx.event.{ActionEvent, Event, EventHandler}
 import javafx.scene.input.{KeyEvent,MouseEvent,ScrollEvent}
 
 //########################################################################
@@ -91,23 +93,35 @@ class AudioWaterfall(par: App) extends Pane
             col
             })
             
-        var busy = false
-        val refresher = new Runnable
+        class Redrawer extends EventHandler[ActionEvent]
             {
-            override def run = 
+            override def handle(event: javafx.event.ActionEvent) =
                 {
-                busy = true
+                updateImg(psbuf)
                 g2d.drawImage(img, 0.0, 0.0, width, height)
-                busy = false
-                }
+                }       
             }
-    
+            
+        val oneFrameAmt = Duration.millis(100);
+        var oneFrame = new KeyFrame(oneFrameAmt, new Redrawer)
+ 
+        TimelineBuilder.create()
+           .cycleCount(Animation.INDEFINITE)
+           .keyFrames(oneFrame)
+           .build()
+           .play();
+        
         /*Scale the power spectrum bins onto the output width.  Do once & reuse. */
         private var pslen = -1
         private var psIndices = Array.fill(iwidth)(0)
+        private var psbuf = Array.fill(100)(0)
                 
-            
         def update(ps: Array[Int]) =
+            {
+            psbuf = ps.clone
+            }
+            
+        def updateImg(ps: Array[Int]) =
             {
             if (pslen != ps.length)
                 {
@@ -120,13 +134,13 @@ class AudioWaterfall(par: App) extends Pane
             for (i <- 0 until iwidth)
                 {
                 val p = ps(psIndices(i))
-                pix(pixptr) = p
+                pix(pixptr) = colors(p & 0xff)
                 pixptr += 1
                 }
             //trace("iw:" + iwidth + "  ih:" + iheight + "  pix:" + pix.size + " pslen:" + pslen)
             writer.setPixels(0, 0, iwidth, iheight, format, pix, 0, iwidth)
-            if (!busy)
-                Platform.runLater(refresher)
+            //if (!busy)
+            //    Platform.runLater(refresher)
             }
             
     

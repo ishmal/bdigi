@@ -80,17 +80,9 @@ class WaterfallFactory(par: App, N: Int, sampleRate: Double, maxFreq: Double)
                 slidingbuf(i) = frame(fp)  *  window(i)
                 fp = (fp + 1) % N
                 }
-            val ps = trans.intPowerSpectrum(slidingbuf, bins)
             val row = wf(wfptr)
             wfptr = (wfptr + 1) % length
-
-            for (i <- 0 until bins)
-                {
-                val v = ps(i)
-                val colidx = v & 0xff
-                val col = colors(colidx)
-                row(i) = col
-                }
+            val ps = trans.intPowerSpectrum(slidingbuf, row)
             f(row)
             }
         }   
