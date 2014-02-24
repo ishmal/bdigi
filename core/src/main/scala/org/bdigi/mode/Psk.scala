@@ -366,7 +366,7 @@ class Psk31(par: App) extends Mode(par, 1000.0)
         super.rate = v
         //costas  = new CostasLoop2(frequency, rate,  sampleRate)
         phaseTransitions = makeTransitions
-        bpf = Fir.bandPass(13, -0.8*rate, 0.8*rate, sampleRate)
+        bpf = Fir.bandPass(13, -0.7*rate, 0.7*rate, sampleRate)
         dataFilter = Fir.raisedCosine(samplesPerSymbol.toInt * 4 + 1, 0.35, rate, sampleRate)
         timer = new EarlyLate(samplesPerSymbol)
         }
