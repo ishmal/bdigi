@@ -653,15 +653,11 @@ class DFft(N: Int)
         powerSpectrum(in, in.size / 2)
         }
         
-    private val logTable = Array.tabulate(65536) ( i=> {
-        val v = (math.log(i+1) * 23.0).toInt
-        //if (i % 256 == 0) println(v)  
-        v
-    })
-
     private val logTable = Array.tabulate(65536) ( i =>
         {
-        (math.log(i+1) * 23.0).toInt
+        val v = (math.log((i+1)*1000.0) * 14.22).toInt
+        //if (i % 256 == 0) println(v)
+        v
         })
 
     def intPowerSpectrum(in: Array[Double], outbuf: Array[Int]) =
@@ -671,11 +667,11 @@ class DFft(N: Int)
         var idx = 0
         for (optr <- 0 until siz)
             {
-            val r = (in(idx) * 20.0).toInt
+            val r = in(idx)
             idx += 1
-            val i = (in(idx) * 20.0).toInt
+            val i = in(idx)
             idx += 1
-            val v = r * r + i * i
+            val v = ((r * r + i * i)*1000.0).toInt
             outbuf(optr) = logTable(v & 0xffff)
             }
         }
