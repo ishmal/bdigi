@@ -56,6 +56,11 @@ class WaterfallFactory(par: App, N: Int, sampleRate: Double, maxFreq: Double)
         col = (col << 8) + b
         col
         })
+        
+    private val logTable = Array.tabulate(65536) ( i =>
+        {
+        (math.log(i+1) * 23.0).toInt
+        })
                       
     private val trans = new DFft(N)
     

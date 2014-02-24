@@ -659,6 +659,11 @@ class DFft(N: Int)
         v
     })
 
+    private val logTable = Array.tabulate(65536) ( i =>
+        {
+        (math.log(i+1) * 23.0).toInt
+        })
+
     def intPowerSpectrum(in: Array[Double], outbuf: Array[Int]) =
         {
         forward(in)
