@@ -54,39 +54,39 @@ class Console2(par: App) extends TextArea
     
     private var autoAdjust = true
     
-    val buf = new StringBuilder
+    val queue = scala.collection.mutable.Queue[String]()
     
     private var busy = false
     val refresher = new Runnable
         {
         override def run =
             {
-            busy = true
             try
                 {
-                setText(buf.toString)
-                if (autoAdjust)
-                    positionCaret(getText.length)
+                while (!queue.isEmpty)
+                    {
+                    appendText(queue.dequeue)
+                    if (autoAdjust)
+                        positionCaret(getText.length)
+                    }
                 }
             catch
                 {
                 case e: Exception => par.error("Console 2: ", e)
                   e.printStackTrace
                 }
-            busy = false
             }
         }
     
     def puttext(str: String) =
         {
-        buf.append(str)
-        if (!busy)
-            Platform.runLater(refresher)
+        queue += str
+        Platform.runLater(refresher)
         }
         
     override def clear =
         {
-        buf.clear
+        queue.clear
         super.clear
         }
         

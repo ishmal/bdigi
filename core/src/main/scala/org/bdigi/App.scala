@@ -99,6 +99,7 @@ class App
         val newdev = AudioDevice.createInput(this, deviceName)
         if (newdev.isDefined)
             {
+            trace("input ok")
             receiver.abort
             inputDevice.foreach(_.close)
             inputDevice = newdev
@@ -281,19 +282,22 @@ class App
         override def run =
             {
             cont = true
-            while (cont && inputDevice.isDefined)
+            while (cont)
                 {
-                val res = inputDevice.get.read
-                if (res.isEmpty)
+                if (inputDevice.isDefined)
                     {
-                    //cont = false
-                    }
-                else
-                    {
-                    for (v <- res.get)
+                    val res = inputDevice.get.read
+                    if (res.isEmpty)
                         {
-                        wf.update(v)(ps => updateSpectrum(ps))
-					    mode.receive(v)
+                        //cont = false
+                        }
+                    else
+                        {
+                        for (v <- res.get)
+                            {
+                            wf.update(v)(ps => updateSpectrum(ps))
+                            mode.receive(v)
+                            }
                         }
                     }
                 }

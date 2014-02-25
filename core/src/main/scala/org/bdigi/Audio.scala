@@ -95,6 +95,7 @@ class JavaAudioInput(par: App, adi: AudioDeviceInfo) extends AudioInputDevice
         
     def close : Boolean =
         {
+        line.stop
         line.close
         true
         }
@@ -119,8 +120,10 @@ class JavaAudioInput(par: App, adi: AudioDeviceInfo) extends AudioInputDevice
     def read : Option[Array[Double]] =
         {
         val numBytes = line.read(buf, 0, bufsize)
-        if (numBytes < 0)
+        if (numBytes <= 0)
+            {
             None
+            }
         else
             {
             var vptr = 0

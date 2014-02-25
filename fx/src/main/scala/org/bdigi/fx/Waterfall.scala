@@ -69,7 +69,7 @@ class AudioWaterfall(par: App) extends Pane
             {
             val prop   = i.toDouble / 256.0
             val hue    = 240.0 - 150.0 * prop
-            val bright = 1.0 // 0.3 + prop / 2
+            val bright = 0.3 + prop / 2
             val c = Color.hsb(hue, 1.0, bright)
             var col = 0xff
             col = (col << 8) + (c.getRed   * 255).toInt
@@ -134,7 +134,7 @@ class AudioWaterfall(par: App) extends Pane
             for (i <- 0 until iwidth)
                 {
                 val p = ps(psIndices(i))
-                pix(pixptr) = colors(p & 0xff)
+                pix(pixptr) = colors2(p & 0xff)
                 pixptr += 1
                 }
             //trace("iw:" + iwidth + "  ih:" + iheight + "  pix:" + pix.size + " pslen:" + pslen)
@@ -256,29 +256,6 @@ class AudioWaterfall(par: App) extends Pane
         
         private val g = getGraphicsContext2D
     
-        private var busy = false
-        val refresher = new Runnable
-            {
-            override def run =
-                {
-                busy = true
-                //trace("run")
-                redraw
-                busy = false
-                }
-            }
-    
-        def update(x: Double, y:Double) = 
-            {
-            buf(bufPtr) = (x, y)
-            bufPtr = (bufPtr + 1) % BUFSIZE
-            if ((bufPtr & 0xf) == 0) //every 16
-                {
-                if (!busy)
-                    Platform.runLater(refresher)
-                }
-            }
-            
         private def redraw =
             {
             val w   = getWidth
@@ -311,6 +288,26 @@ class AudioWaterfall(par: App) extends Pane
             g.setFill(Color.RED)
             g.fillRect(x-2.0, y-2.0, 4.0, 4.0)
             }    
+
+        val refresher = new Runnable
+            {
+            override def run =
+                {
+                //trace("run")
+                redraw
+                }
+            }
+    
+        def update(x: Double, y:Double) = 
+            {
+            buf(bufPtr) = (x, y)
+            bufPtr = (bufPtr + 1) % BUFSIZE
+            if ((bufPtr & 0xf) == 0) //every 16
+                {
+                Platform.runLater(refresher)
+                }
+            }
+            
                   
     } //scope
     
