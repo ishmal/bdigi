@@ -110,7 +110,7 @@ class JavaAudioInput(par: App, adi: AudioDeviceInfo) extends AudioInputDevice
             {
             for (lo <- 0 until 256)
                 {
-                val v = ((hi << 8) + lo).toDouble * shortToDouble * 0.01
+                val v = ((hi << 8) + lo).toDouble * shortToDouble * 0.02
                 arr(hi)(lo) = v
                 }
             }

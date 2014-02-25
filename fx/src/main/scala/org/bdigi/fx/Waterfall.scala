@@ -93,39 +93,19 @@ class AudioWaterfall(par: App) extends Pane
             col
             })
             
-        class Redrawer extends EventHandler[ActionEvent]
-            {
-            override def handle(event: javafx.event.ActionEvent) =
-                {
-                updateImg(psbuf)
-                g2d.drawImage(img, 0.0, 0.0, width, height)
-                }       
-            }
-            
-        val oneFrameAmt = Duration.millis(100);
-        var oneFrame = new KeyFrame(oneFrameAmt, new Redrawer)
- 
-        TimelineBuilder.create()
-           .cycleCount(Animation.INDEFINITE)
-           .keyFrames(oneFrame)
-           .build()
-           .play();
+
         
         /*Scale the power spectrum bins onto the output width.  Do once & reuse. */
         private var pslen = -1
         private var psIndices = Array.fill(iwidth)(0)
         private var psbuf = Array.fill(100)(0)
                 
-        def update(ps: Array[Int]) =
+        //only call from javafx thread
+        def redraw() =
             {
-            psbuf = ps.clone
-            }
-            
-        def updateImg(ps: Array[Int]) =
-            {
-            if (pslen != ps.length)
+            if (pslen != psbuf.length)
                 {
-                pslen = ps.length
+                pslen = psbuf.length
                 psIndices = Array.tabulate(iwidth)(_ * pslen / iwidth)
                 }
             val pix = pixels
@@ -133,15 +113,20 @@ class AudioWaterfall(par: App) extends Pane
             var pixptr = lastRow
             for (i <- 0 until iwidth)
                 {
-                val p = ps(psIndices(i))
+                val p = psbuf(psIndices(i))
                 pix(pixptr) = colors2(p & 0xff)
                 pixptr += 1
                 }
             //trace("iw:" + iwidth + "  ih:" + iheight + "  pix:" + pix.size + " pslen:" + pslen)
             writer.setPixels(0, 0, iwidth, iheight, format, pix, 0, iwidth)
-            //if (!busy)
-            //    Platform.runLater(refresher)
+            g2d.drawImage(img, 0.0, 0.0, width, height)
             }
+
+        def update(ps: Array[Int]) =
+            {
+            psbuf = ps.clone
+            }
+            
             
     
         }//Waterfall
@@ -251,12 +236,13 @@ class AudioWaterfall(par: App) extends Pane
         private var bufPtr = 0
         private var lastx = 0.0
         private var lasty = 0.0
-        private val vscale = 40.0
+        private val vscale = 60.0
         private val timeScale = 2
         
         private val g = getGraphicsContext2D
     
-        private def redraw =
+        //only call from javafx thread
+        def redraw =
             {
             val w   = getWidth
             val w2  = w * 0.5
@@ -289,23 +275,11 @@ class AudioWaterfall(par: App) extends Pane
             g.fillRect(x-2.0, y-2.0, 4.0, 4.0)
             }    
 
-        val refresher = new Runnable
-            {
-            override def run =
-                {
-                //trace("run")
-                redraw
-                }
-            }
-    
-        def update(x: Double, y:Double) = 
+ 
+         def update(x: Double, y:Double) = 
             {
             buf(bufPtr) = (x, y)
             bufPtr = (bufPtr + 1) % BUFSIZE
-            if ((bufPtr & 0xf) == 0) //every 16
-                {
-                Platform.runLater(refresher)
-                }
             }
             
                   
@@ -345,6 +319,24 @@ class AudioWaterfall(par: App) extends Pane
         scope.relocate(width-height, 0)
         getChildren.addAll(wf, tuner, scope)
         }
+
+    class Redrawer extends EventHandler[ActionEvent]
+        {
+        override def handle(event: javafx.event.ActionEvent) =
+            {
+            wf.redraw
+            scope.redraw
+            }       
+        }
+        
+    val oneFrameAmt = Duration.millis(90);
+    var oneFrame = new KeyFrame(oneFrameAmt, new Redrawer)
+
+    TimelineBuilder.create()
+       .cycleCount(Animation.INDEFINITE)
+       .keyFrames(oneFrame)
+       .build()
+       .play();
 
     def update(ps: Array[Int]) =
         wf.update(ps)
