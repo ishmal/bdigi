@@ -26,6 +26,7 @@
 package org.bdigi
 
 
+import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D                 
 
 
 /**
@@ -56,12 +57,12 @@ class WaterfallFactory(par: App, N: Int, sampleRate: Double, maxFreq: Double)
         col = (col << 8) + b
         col
         })
-                      
-    private val trans = new DFft(N)
+     
+    private val trans = new DoubleFFT_1D(N)
     
     private var framePtr = 0
     private var frameCtr = 0
-    private val SUBN = N/5
+    private val SUBN = N/3
     
     private val slidingbuf = Array.ofDim[Double](N)
     
@@ -82,7 +83,18 @@ class WaterfallFactory(par: App, N: Int, sampleRate: Double, maxFreq: Double)
                 }
             val row = wf(wfptr)
             wfptr = (wfptr + 1) % length
-            val ps = trans.intPowerSpectrum(slidingbuf, row)
+            trans.realForward(slidingbuf)
+            var idx = 0
+            for (rowptr <- 0 until bins)
+                {
+                val r = slidingbuf(idx)
+                idx += 1
+                val i = slidingbuf(idx)
+                idx += 1
+                //val v = MathUtil.log1p(r * r + i * i) * 15.0
+                val v = MathUtil.log2x10((r * r + i * i).toFloat)
+                row(rowptr) = v.toInt & 0xff
+                }
             f(row)
             }
         }   

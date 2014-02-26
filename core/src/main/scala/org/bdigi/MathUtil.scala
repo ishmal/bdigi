@@ -147,6 +147,18 @@ object MathUtil
         return x * 8.2629582881927490e-8f - 87.989971088f
         }
         
+    /**
+     * Same as above, but multiplied by 10
+     * @param v the value for which to estimate the log
+     * @return the estimated log
+     *
+     */              
+    def log2x10(v: Float) : Float =
+        {
+        var x = java.lang.Float.floatToRawIntBits(v+1).toFloat
+        return x * 8.2629582881927490e-7f - 879.89971088f
+        }
+        
     def log1p(v: Double) : Double =
         FastMath.log1p(v)
         

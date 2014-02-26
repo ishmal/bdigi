@@ -102,7 +102,7 @@ class Mode(var par: App, val sampleRateHint: Double)
     def receive(iv: Double)
         {
         val cs = nco.next
-        val vi = iv * cs.r
+        val vi =  iv * cs.r
         val vq = -iv * cs.i
         val incpx = Complex(vi, vq)
     

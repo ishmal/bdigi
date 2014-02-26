@@ -654,11 +654,11 @@ class DFft(N: Int)
         }
         
     /**
-     * 1000 = 14.22,   100=23.0
+     * 1000 = 14.22,   100=16.3.0  10=19
      */
     private val logTable = Array.tabulate(65536) ( i =>
         {
-        val v = (math.log((i+1)*100.0) * 14.22).toInt
+        val v = (math.log((i+1)*100.0) * 16.3).toInt
         //if (i % 256 == 0) println(v)
         v
         })
@@ -674,8 +674,8 @@ class DFft(N: Int)
             idx += 1
             val i = in(idx)
             idx += 1
-            val v = ((r * r + i * i)*100.0).toInt
-            outbuf(optr) = logTable(v & 0xffff)
+            val v = ((r * r + i * i) * 100.0).toInt
+            outbuf(optr) = logTable((v >> 14) & 0xffff)
             }
         }
         

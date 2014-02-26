@@ -41,11 +41,6 @@ class Nco(frequency: Double, sampleRate: Double)
         Nco.table((phase >> 16).toInt & 0xffff)
         }
         
-    def nextd : (Decimal, Decimal) =
-        {
-        phase += freq
-        Nco.dtable((phase >> 16).toInt & 0xffff)
-        }
 }
 
 
@@ -61,8 +56,6 @@ object Nco
         val angle = delta * idx.toDouble
         Complex( math.cos(angle), math.sin(angle) ) 
         })
-
-    val dtable = table.map(e => (Decimal(e.r),Decimal(e.i)))
 
 }
 

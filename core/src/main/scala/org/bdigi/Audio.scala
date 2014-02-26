@@ -68,11 +68,10 @@ trait AudioOutputDevice extends AudioDevice
  */
 class JavaAudioInput(par: App, adi: AudioDeviceInfo) extends AudioInputDevice
 {
-    private val rate            = adi.format.getSampleRate.toInt
     private val line            = AudioSystem.getTargetDataLine(adi.format, adi.mixerInfo)
     private val frameSize       = adi.format.getFrameSize
     private val framesPerBuffer = line.getBufferSize / 8
-    private val bufsize         = 4096 * frameSize
+    private val bufsize         = 2048 * frameSize
     //trace("frameSize: " + frameSize + "  bufsize: " + bufsize)
     private val buf             = Array.ofDim[Byte](bufsize*2)
     private val vbuf            = Array.ofDim[Double](bufsize)
@@ -110,7 +109,7 @@ class JavaAudioInput(par: App, adi: AudioDeviceInfo) extends AudioInputDevice
             {
             for (lo <- 0 until 256)
                 {
-                val v = ((hi << 8) + lo).toDouble * shortToDouble * 0.02
+                val v = ((hi << 8) + lo).toDouble * shortToDouble
                 arr(hi)(lo) = v
                 }
             }

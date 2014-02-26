@@ -128,7 +128,9 @@ class App
 
     def sampleRate =
         {
-        if (inputDevice.isDefined) inputDevice.get.sampleRate else 7350.0
+        val fs = if (inputDevice.isDefined) inputDevice.get.sampleRate else 7350.0
+        //trace("fs:" + fs)
+        fs
         }
 		
     val wf = new WaterfallFactory(this, 2048,  sampleRate, 2500.0)
