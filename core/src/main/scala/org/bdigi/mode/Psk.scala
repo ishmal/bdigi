@@ -321,7 +321,7 @@ object MaximumLikelihood
 
 
 
-class Psk31(par: App) extends Mode(par, 1000.0)
+class Psk31(par: App) extends Mode(par, 600.0)
 {
     //####################################################
     //# S E T T I N G S
@@ -354,21 +354,25 @@ class Psk31(par: App) extends Mode(par, 1000.0)
     trace("sampleRate: " + sampleRate + "  samplesPerSymbol: " + samplesPerSymbol)
 
     var costas  = new CostasLoop2(frequency, rate,  sampleRate)
+    
+    //var dataFilter = Fir.raisedCosine(samplesPerSymbol.toInt * 4 + 1, 0.35, rate, sampleRate)
+    def mkDataFilter = Fir.rootRaisedCosine(13, 0.35, rate * 0.25, sampleRate)
+    def mkBpf        = Fir.bandPass(13, -0.7*rate, 0.7*rate, sampleRate)
+    def mkTimer      = new EarlyLate(samplesPerSymbol)
 
-    var dataFilter = Fir.raisedCosine(samplesPerSymbol.toInt * 4 + 1, 0.35, rate, sampleRate)
-    var bpf = Fir.bandPass(13, -0.7*rate, 0.7*rate, sampleRate)
-    var timer = new EarlyLate(samplesPerSymbol)
+    var dataFilter = mkDataFilter
+    var bpf        = mkBpf
+    var timer      = mkTimer
     
     var useCostas = false
     
     override def rate_=(v: Double) =
         {
         super.rate = v
-        //costas  = new CostasLoop2(frequency, rate,  sampleRate)
         phaseTransitions = makeTransitions
-        bpf = Fir.bandPass(13, -0.7*rate, 0.7*rate, sampleRate)
-        dataFilter = Fir.raisedCosine(samplesPerSymbol.toInt * 4 + 1, 0.35, rate, sampleRate)
-        timer = new EarlyLate(samplesPerSymbol)
+        dataFilter = mkDataFilter
+        bpf        = mkBpf
+        timer      = mkTimer
         }
 
     //####################################################
@@ -378,7 +382,7 @@ class Psk31(par: App) extends Mode(par, 1000.0)
 
     override def update(isample: Complex) : Double =
         {
-        var sample = bpf.update(isample)
+        val sample = bpf.update(isample)
         val z = dataFilter.update(sample)
         //var zscope = z * 2.0;
         par.updateScope(z.r, z.i)

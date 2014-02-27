@@ -176,7 +176,7 @@ class Mode(var par: App, val sampleRateHint: Double)
     //###########################################################
     //# O T H E R    S E T T I N G S
     //###########################################################
-    private var agc = new SlowAgc(20000.0, sampleRate)
+    private var agc = new SlowAgc(10000.0, sampleRate)
         
     var useAgc = true
 

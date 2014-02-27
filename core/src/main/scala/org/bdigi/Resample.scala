@@ -31,14 +31,16 @@ package org.bdigi
 
 /**
  * Let's use some of the tricks for a low-pass filter, but tailor it explicitly
+ * This is a polyphase resampler, either for interpolating or decimating.
  */
 class FirResampler(decimation: Int)
 {
-    private val size     = 40
+    private val size     = 10
     private val minus1   = size-1
    
+    //Note that the cutoff freq and sample rate don't matter.  Only the ratio matters.
     private val coeffs = Fir.lowPassCoeffs(decimation * size,
-             1000.0/(decimation*2), 1000.0, Window.Hamming)
+             1.0/(decimation*2), 1.0, Window.Hamming)
 
     private val polys = Array.tabulate(decimation, size) ( (p,i) => coeffs(i*decimation + p) )
 

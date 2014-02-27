@@ -69,7 +69,7 @@ class AudioWaterfall(par: App) extends Pane
             {
             val prop   = i.toDouble / 256.0
             val hue    = 240.0 - 150.0 * prop
-            val bright = 0.1 //  + prop / 2
+            val bright = 0.3 + prop / 2
             val c = Color.hsb(hue, 1.0, bright)
             var col = 0xff
             col = (col << 8) + (c.getRed   * 255).toInt
