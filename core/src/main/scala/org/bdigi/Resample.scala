@@ -79,6 +79,9 @@ class FirResampler(decimation: Int)
         
         
         
+    /**
+     * Generic decimator method
+     */
     def decimate(sample: Double)(f: Double => Unit) =
         {
         delayIndex = (delayIndex + minus1) % size
@@ -100,7 +103,9 @@ class FirResampler(decimation: Int)
             }
         }
         
-
+    /**
+     * Convenience method when simply mapping from buffer to buffer
+     */
     def decimate(samples: Array[Double], count: Int) : Array[Double] =
         {
         val outbuf = Array.ofDim[Double](count/decimation)
@@ -114,6 +119,9 @@ class FirResampler(decimation: Int)
         }
         
 
+    /**
+     * Convenience method when simply mapping from buffer to buffer
+     */
     def decimate(samples: Array[Double]) : Array[Double] =
         {
         decimate(samples, samples.size)

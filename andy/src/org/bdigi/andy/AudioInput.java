@@ -96,8 +96,9 @@ class AudioInput implements AudioInputDevice
 
     @Override
     public scala.Option<double[]> read() {
-        int vcount = 0;
         int count = input.read(buf, 0, bufsize);
+        if (count < 0)
+            return scala.Option.apply(null);
         for (int i=0 ; i < count ; i++)
             vbuf[i] = shortToDouble * buf[i];        
         double packet[] = resampler.decimate(vbuf, count);
