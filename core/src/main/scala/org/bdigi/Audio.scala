@@ -83,7 +83,7 @@ class JavaAudioInput(par: App, adi: AudioDeviceInfo) extends AudioInputDevice
             line.close
         line.open(adi.format)
         line.start
-        par.trace("line open")
+        //par.trace("line open")
         true
         }
         
@@ -91,7 +91,7 @@ class JavaAudioInput(par: App, adi: AudioDeviceInfo) extends AudioInputDevice
         {
         line.stop
         line.close
-        par.trace("line close")
+        //par.trace("line close")
         true
         }
         

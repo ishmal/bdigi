@@ -100,11 +100,9 @@ class App
         val newdev = AudioDevice.createInput(this, deviceName)
         if (newdev.isDefined)
             {
-            receiver.abort
             inputDevice.foreach(_.close)
             inputDevice = newdev
             inputDevice.get.open
-            receive
             adjust
             }
         }
@@ -117,11 +115,9 @@ class App
         val newdev = AudioDevice.createOutput(this, deviceName)
         if (newdev.isDefined)
             {
-            transmitter.abort
             outputDevice.foreach(_.close)
             outputDevice = newdev
             outputDevice.get.open
-            transmit
             adjust
             }
         }
@@ -144,11 +140,13 @@ class App
         
     def rxtx_=(v: Boolean) =
         {
-        if (v) transmit else transmitter.abort
+        transmitOrReceive = v
         }
     
     def rxtx : Boolean =
-	    {true}
+	    {
+	    transmitOrReceive
+	    }
 	
     def agc_=(v: Boolean) =
         mode.useAgc = v
@@ -270,8 +268,9 @@ class App
     //# Startup
     //########################################
     
-
-    class Receiver extends Thread("sdr-receiver")
+    var transmitOrReceive = false
+    
+    class TRLoop extends Thread("digi-trloop")
     {
         def abort = 
             cont = false
@@ -283,97 +282,89 @@ class App
             cont = true
             while (cont)
                 {
-                if (inputDevice.isDefined)
+                if (transmitOrReceive)
                     {
-                    val res = inputDevice.get.read
-                    if (res.isEmpty)
-                        {
-                        //cont = false
-                        }
-                    else
-                        {
-                        for (v <- res.get)
-                            {
-                            wf.update(v)(ps => updateSpectrum(ps))
-                            mode.receive(v)
-                            }
-                        }
-                    }
-                }
-            }
-    }
-    
-    
-
-    var receiver = new Receiver
-    
-    def receive =
-        {
-        receiver.abort
-        receiver = new Receiver
-        receiver.start
-        }
-
-
-
-
-    class Transmitter extends Thread("sdr-transmitter")
-    {
-        def abort = 
-            cont = false
-            
-        var cont = false
-		        
-        override def run =
-            {
-            cont = true
-            val preamble = mode.getTransmitBeginData
-            if (preamble.isDefined)
-                outputDevice.get.write(preamble.get)
-            while (cont && outputDevice.isDefined)
-                {
-                val res = mode.getTransmitData
-                if (res.isEmpty)
-                    {
-                    cont = false
+                    doTx(this)
                     }
                 else
                     {
-                    //trace("data:" + res.get.size)
-                    outputDevice.get.write(res.get)
+                    doRx(this)
                     }
                 }
-            val postamble = mode.getTransmitEndData
-            if (postamble.isDefined)
-                outputDevice.get.write(postamble.get)
             }
-    }
+    }//TRLoop
     
-    var transmitter = new Transmitter
     
-    def transmit =
+    def doRx(loop: TRLoop) =
         {
-        transmitter.abort
-        transmitter = new Transmitter
-        transmitter.start
+        if (inputDevice.isDefined)
+            {
+            val res = inputDevice.get.read
+            if (res.isEmpty)
+                {
+                //cont = false
+                }
+            else
+                {
+                for (v <- res.get)
+                    {
+                    wf.update(v)(ps => updateSpectrum(ps))
+                    mode.receive(v)
+                    }
+                }
+            }
         }
+    
+    
+    def doTx(loop: TRLoop) =
+        {
+        val preamble = mode.getTransmitBeginData
+        if (preamble.isDefined)
+            outputDevice.get.write(preamble.get)
+        while (loop.cont && outputDevice.isDefined)
+            {
+            val res = mode.getTransmitData
+            if (res.isEmpty)
+                {
+                loop.cont = false
+                }
+            else
+                {
+                //trace("data:" + res.get.size)
+                outputDevice.get.write(res.get)
+                }
+            }
+        val postamble = mode.getTransmitEndData
+        if (postamble.isDefined)
+            outputDevice.get.write(postamble.get)
+        }
+        
+
+
+    var trloop = new TRLoop
+    
+    def start =
+        {
+        trloop.abort
+        trloop = new TRLoop
+        trloop.start
+        }
+
+    def stop =
+        {
+        inputDevice.foreach(_.close)
+        outputDevice.foreach(_.close)
+        trloop.abort
+        }  
 
 
     /**
      * Let's set things up
      */
     configLoad
+    start    
+
     
-    receive
-
-    def stop =
-        {
-        receiver.abort  
-        transmitter.abort
-        inputDevice.foreach(_.close)
-        outputDevice.foreach(_.close)
-        }  
-
 
     /**
      * Override these in your client code, especially for a GUI

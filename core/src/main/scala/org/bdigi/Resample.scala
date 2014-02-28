@@ -44,7 +44,6 @@ class FirResampler(decimation: Int)
 
     private val polys = Array.tabulate(decimation, size) ( (p,i) => coeffs(i*decimation + p) )
 
-
     private var phase = 0
     private var sum   = 0.0
     private var rsum  = 0.0
@@ -53,7 +52,6 @@ class FirResampler(decimation: Int)
     private val delayLine  = Array.fill(size)(0.0)
     private val delayLineX = Array.fill(size)(Complex(0.0))
     private var delayIndex = 0
-    
     
 
     def decimate(sample: Complex)(f: Complex=>Unit) =
@@ -100,6 +98,25 @@ class FirResampler(decimation: Int)
             f(sum)
             sum = 0.0
             }
+        }
+        
+
+    def decimate(samples: Array[Double], count: Int) : Array[Double] =
+        {
+        val outbuf = Array.ofDim[Double](count/decimation)
+        var outptr = 0
+        samples.foreach(v=>decimate(v)(dv=> 
+            { 
+            outbuf(outptr)=dv
+            outptr += 1
+            }))
+        outbuf
+        }
+        
+
+    def decimate(samples: Array[Double]) : Array[Double] =
+        {
+        decimate(samples, samples.size)
         }
         
 

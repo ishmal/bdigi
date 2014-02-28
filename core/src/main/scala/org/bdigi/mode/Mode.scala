@@ -92,8 +92,8 @@ class Mode(var par: App, val sampleRateHint: Double)
     
     val sampleRate = par.sampleRate / decimation
     
-    var decimator    = new FirResampler(decimation)
-    var interpolator = new FirResampler(decimation)
+    private val decimator    = new FirResampler(decimation)
+    private val interpolator = new FirResampler(decimation)
     
     //trace("requested fs:" + sampleRateHint + "  decimation: " +
     //    decimation + "   sampleRate:" + sampleRate)

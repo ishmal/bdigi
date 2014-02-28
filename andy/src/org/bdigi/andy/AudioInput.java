@@ -33,7 +33,6 @@ import android.media.AudioTrack;
 
 import org.bdigi.*;
 
-
 class AudioInput implements AudioInputDevice
 {
     private int rate;
@@ -42,6 +41,14 @@ class AudioInput implements AudioInputDevice
     private int bufsize;
     private AudioRecord input;
     private short buf[];
+    private double vbuf[];
+    private FirResampler resampler;
+
+    /**
+     * Convert between   0-32767  <->  0.0-1.0
+     */
+    private final double doubleToShort  = 32767.0;
+    private final double shortToDouble  = 1.0 / 32768.0;
 
     public AudioInput() {
         rate    = 44100;
@@ -51,6 +58,8 @@ class AudioInput implements AudioInputDevice
         //0 = MediaRecorder.AudioSource.DEFAULT, tough to import
         input = new AudioRecord(0, rate, config, format, bufsize);
         buf  = new short[bufsize];
+        vbuf = new double[bufsize];
+        resampler = new FirResampler(6);
 
     }
 
@@ -68,37 +77,31 @@ class AudioInput implements AudioInputDevice
     }
     */
 
+    @Override
     public double sampleRate() {
-        return 8000.0;
+        return 7350.0;
     }
 
+    @Override
     public boolean open()
     {
         return true;
     }
 
+    @Override
     public boolean close() {
         return true;
     }
+    
 
+    @Override
     public scala.Option<double[]> read() {
-        return scala.Option.apply(null);
-        /*
-        var vcount = 0
-        val count = input.read(buf, 0, bufsize)
-        for (i <- 0 until count)
-            {
-            val dval = Decimal(buf(i).toInt)
-            decimator.update(dval) ( v =>
-                {
-                vbuf(vcount) = v
-                vcount += 1
-                })
-            }
-        val packet = Array.ofDim[Decimal](vcount)
-        System.arraycopy(vbuf, 0, packet, 0, vcount)
-        Some(packet)
-        */
+        int vcount = 0;
+        int count = input.read(buf, 0, bufsize);
+        for (int i=0 ; i < count ; i++)
+            vbuf[i] = shortToDouble * buf[i];        
+        double packet[] = resampler.decimate(vbuf, count);
+        return scala.Option.apply(packet);
     }
 
 
