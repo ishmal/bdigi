@@ -153,10 +153,10 @@ object MathUtil
      * @return the estimated log
      *
      */              
-    def log2x10(v: Float) : Float =
+    def log2_1p(v: Float) : Float =
         {
         var x = java.lang.Float.floatToRawIntBits(v+1).toFloat
-        return x * 8.2629582881927490e-7f - 879.89971088f
+        return x * 8.2629582881927490e-8f - 87.989971088f
         }
         
     def log1p(v: Double) : Double =

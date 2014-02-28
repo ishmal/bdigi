@@ -96,10 +96,10 @@ class App
 
     def setInputDevice(deviceName: String) =
         {
+        inputDevice.foreach(_.close)
         val newdev = AudioDevice.createInput(this, deviceName)
         if (newdev.isDefined)
             {
-            trace("input ok")
             receiver.abort
             inputDevice.foreach(_.close)
             inputDevice = newdev
@@ -113,6 +113,7 @@ class App
 
     def setOutputDevice(deviceName: String) =
         {
+        outputDevice.foreach(_.close)
         val newdev = AudioDevice.createOutput(this, deviceName)
         if (newdev.isDefined)
             {
@@ -133,7 +134,7 @@ class App
         fs
         }
 		
-    val wf = new WaterfallFactory(this, 2048,  sampleRate, 2500.0)
+    val wf = new WaterfallFactory(this, 3072,  sampleRate, 2500.0)
 
 	def frequency =
 	    mode.frequency
@@ -207,9 +208,9 @@ class App
 				name              = p("name")
 				locator           = p("locator")
 				audioInputDevice  = p("audioInputDevice")
-				inputDevice       = AudioDevice.createInput(self, audioInputDevice)
-				inputDevice.foreach(_.open)
+				setInputDevice(audioInputDevice)
 				audioOutputDevice = p("audioOutputDevice")
+				setOutputDevice(audioOutputDevice)
 				}
 			}
 
@@ -239,10 +240,6 @@ class App
             val ins = new java.io.FileInputStream("bdigi.ini")
             config.load(ins)
             ins.close
-			inputDevice = AudioDevice.createInput(self, config.audioInputDevice)
-			inputDevice.foreach(_.open)
-    		outputDevice = AudioDevice.createOutput(self, config.audioOutputDevice)
-			outputDevice.foreach(_.open)
 			true
             }
         catch 

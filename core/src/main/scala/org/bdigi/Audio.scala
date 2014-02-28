@@ -68,27 +68,22 @@ trait AudioOutputDevice extends AudioDevice
  */
 class JavaAudioInput(par: App, adi: AudioDeviceInfo) extends AudioInputDevice
 {
-    private val line            = AudioSystem.getTargetDataLine(adi.format, adi.mixerInfo)
-    private val frameSize       = adi.format.getFrameSize
-    private val framesPerBuffer = line.getBufferSize / 8
-    private val bufsize         = 2048 * frameSize
-    //trace("frameSize: " + frameSize + "  bufsize: " + bufsize)
-    private val buf             = Array.ofDim[Byte](bufsize*2)
-    private val vbuf            = Array.ofDim[Double](bufsize)
-
-
-    
-    val resampler = new FirResampler(6)
-    
+    private val line      = AudioSystem.getTargetDataLine(adi.format, adi.mixerInfo)
+    private var bufsize   = line.getBufferSize
+    private val buf       = Array.ofDim[Byte](bufsize*2)
+    private val vbuf      = Array.ofDim[Double](bufsize)
+    private val resampler = new FirResampler(6)
 
     def sampleRate =
         7350.0
         
-    
     def open : Boolean =
         {
-        line.open(adi.format, bufsize)
+        if (line.isRunning)
+            line.close
+        line.open(adi.format)
         line.start
+        par.trace("line open")
         true
         }
         
@@ -96,13 +91,21 @@ class JavaAudioInput(par: App, adi: AudioDeviceInfo) extends AudioInputDevice
         {
         line.stop
         line.close
+        par.trace("line close")
         true
         }
         
-    val doubleToShort  = 32767.0
-    val shortToDouble  = 1.0 / 32768.0
+    /**
+     * Convert between   0-32767  <->  0.0-1.0
+     */
+    private val doubleToShort  = 32767.0
+    private val shortToDouble  = 1.0 / 32768.0
     
-    val bytesToDouble =
+    /**
+     * Table for taking a short sample from the input stream as two bytes, and
+     * using those bytes to look up a double value, rather than calculating it
+     */
+    private val bytesToDouble =
         {
         val arr = Array.ofDim[Double](256, 256)
         for (hi <- 0 until 256)
@@ -116,9 +119,11 @@ class JavaAudioInput(par: App, adi: AudioDeviceInfo) extends AudioInputDevice
         arr
         }
 
+    private val readsize = (bufsize / 4) & 0xfffe 
+    
     def read : Option[Array[Double]] =
         {
-        val numBytes = line.read(buf, 0, bufsize)
+        val numBytes = line.read(buf, 0, readsize)
         if (numBytes <= 0)
             {
             None
@@ -143,7 +148,7 @@ class JavaAudioInput(par: App, adi: AudioDeviceInfo) extends AudioInputDevice
             Some(packet)
             }
         }
-}
+}//JavaAudioInput
 
 
 
@@ -207,7 +212,7 @@ class JavaAudioOutput(par: App, adi: AudioDeviceInfo) extends AudioOutputDevice
         true
         }
 
-}
+}//JavaAudioOutput
 
 
 

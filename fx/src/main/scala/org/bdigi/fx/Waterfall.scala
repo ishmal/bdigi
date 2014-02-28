@@ -126,11 +126,11 @@ class AudioWaterfall(par: App) extends Pane
             {
             psbuf = ps.clone
             }
-            
-            
-    
+                
         }//Waterfall
-    
+
+
+
     class Tuner(width: Double, height: Double) extends Canvas(width, height)
         {
         val g = getGraphicsContext2D
@@ -248,16 +248,20 @@ class AudioWaterfall(par: App) extends Pane
             val w2  = w * 0.5
             val h   = getHeight
             val h2  = h * 0.5
-            g.setFill(Color.BLACK)
-            g.fillRect(0, 0, w, h)
-            g.setStroke(Color.WHITE)
-            g.strokeLine(0, h2, w, h2+2.0)
-            g.strokeLine(w2, 0, w2, h)
             val x0  = w2
             val y0  = h2
             var ptr = bufPtr
-            var x     = 0.0
-            var y     = 0.0
+            var x   = 0.0
+            var y   = 0.0
+
+            //crosshairs
+            g.setFill(Color.BLACK)
+            g.fillRect(0, 0, w, h)
+            g.setStroke(Color.WHITE)
+            g.strokeLine( 0, h2,  w, h2)
+            g.strokeLine(w2,  0, w2,  h)
+
+            //the trace line
             g.setStroke(Color.YELLOW)
             for (i <- 0 until BUFSIZE by timeScale)
                 {

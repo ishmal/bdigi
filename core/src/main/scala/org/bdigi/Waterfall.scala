@@ -92,7 +92,7 @@ class WaterfallFactory(par: App, N: Int, sampleRate: Double, maxFreq: Double)
                 val i = slidingbuf(idx)
                 idx += 1
                 //val v = MathUtil.log1p(r * r + i * i) * 15.0
-                val v = MathUtil.log2x10((r * r + i * i).toFloat)
+                val v = MathUtil.log2_1p((r * r + i * i).toFloat) * 20.0
                 row(rowptr) = v.toInt & 0xff
                 }
             f(row)
