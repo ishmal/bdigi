@@ -42,7 +42,9 @@ class AudioInput implements AudioInputDevice
     private AudioRecord input;
     private short buf[];
     private double vbuf[];
+    private int vptr;
     private FirResampler resampler;
+    private FirResamplerOutput output;
     private App par;
 
     /**
@@ -61,7 +63,15 @@ class AudioInput implements AudioInputDevice
         input = new AudioRecord(0, rate, config, format, bufsize);
         buf  = new short[bufsize];
         vbuf = new double[bufsize];
+        vptr = 0;
         resampler = new FirResampler(6);
+        output = new FirResamplerOutput()
+            {
+            public void apply(double v)
+                {
+                vbuf[vptr++] = v;
+                }
+            };
 
     }
 
@@ -98,8 +108,10 @@ class AudioInput implements AudioInputDevice
         if (count < 0)
             return scala.Option.apply(null);
         for (int i=0 ; i < count ; i++)
-            vbuf[i] = shortToDouble * buf[i];        
-        double packet[] = resampler.decimate(vbuf, count);
+            resampler.decimateToOutput(shortToDouble * buf[i], output);
+        double packet[] = new double[vptr];
+        System.arraycopy(packet, 0, vbuf, 0, vptr);
+        vptr = 0;
         return scala.Option.apply(packet);
     }
 
