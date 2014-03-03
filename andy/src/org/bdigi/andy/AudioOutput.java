@@ -43,8 +43,6 @@ class AudioOutput implements AudioOutputDevice
     private int sptr;
     private int slen;
     private App par;
-    private FirResampler resampler;
-    private FirResamplerOutput receiver;
 
     /**
      * Convert between   0-32767  <->  0.0-1.0
@@ -64,19 +62,6 @@ class AudioOutput implements AudioOutputDevice
         output = new AudioTrack(streamtype, rate, config, format, bufsize, mode);
         sbuf  = new short[bufsize];
         slen = bufsize;
-        resampler = new FirResampler(6);
-        receiver = new FirResamplerOutput()
-            {
-            public void apply(double v)
-                {
-                sbuf[sptr++] = (short)(doubleToShort * v);
-                if (sptr >= slen)
-                    {
-                    output.write(sbuf, 0, slen);
-                    sptr = 0;
-                    }
-                }
-            };
     }
 
     public void error(String msg) {
@@ -89,15 +74,19 @@ class AudioOutput implements AudioOutputDevice
     }
 
     public double sampleRate() {
-        return 7350.0;
+        return 44100.0;
     }
     
     public boolean write(double inbuf[]) {
-        int bufptr = 0;
         int len = inbuf.length;
         for (int i=0 ; i < len ; i++)
             {
-            resampler.interpolateToOutput(inbuf[i], receiver);
+            sbuf[sptr++] = (short) (doubleToShort * inbuf[i]);
+            if (sptr >= slen)
+                {
+                output.write(sbuf, 0, slen);
+                sptr = 0;
+                }
             }
         return true;
         }

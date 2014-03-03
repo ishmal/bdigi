@@ -72,11 +72,7 @@ class JavaAudioInput(par: App, adi: AudioDeviceInfo) extends AudioInputDevice
     private var bufsize   = line.getBufferSize
     private val buf       = Array.ofDim[Byte](bufsize*2)
     private val vbuf      = Array.ofDim[Double](bufsize)
-    private val resampler = new FirResampler(6)
 
-    def sampleRate =
-        7350.0
-        
     def open : Boolean =
         {
         if (line.isRunning)
@@ -95,10 +91,9 @@ class JavaAudioInput(par: App, adi: AudioDeviceInfo) extends AudioInputDevice
         true
         }
         
-    /**
-     * Convert between   0-32767  <->  0.0-1.0
-     */
-    private val doubleToShort  = 32767.0
+    def sampleRate =
+        44100.0
+        
     private val shortToDouble  = 1.0 / 32768.0
     
     /**
@@ -134,14 +129,8 @@ class JavaAudioInput(par: App, adi: AudioDeviceInfo) extends AudioInputDevice
             for (i <- 0 until numBytes by 2)
                 {
                 val dval = bytesToDouble(buf(i) & 0xff)(buf(i+1) & 0xff)
-                //par.trace("dval:" + dval)
-                
-                resampler.decimate(dval)( v =>
-                    {
-                    //par.trace("v:" + v)
-                    vbuf(vptr) = v
-                    vptr += 1
-                    })
+                vbuf(vptr) = dval
+                vptr += 1
                 }
             val packet = Array.ofDim[Double](vptr)
             System.arraycopy(vbuf, 0, packet, 0, vptr)
@@ -163,12 +152,9 @@ class JavaAudioOutput(par: App, adi: AudioDeviceInfo) extends AudioOutputDevice
     private val framesPerBuffer = line.getBufferSize / 8
     private val bufsize         = 4096 * frameSize
     private val buf             = Array.ofDim[Byte](bufsize)
+    private var bptr            = 0
 
-    val resampler = new FirResampler(6) // 8000->44100
-
-
-    def sampleRate =
-        7350.0
+    private val doubleToShort  = 32767.0
 
     def open : Boolean =
         {
@@ -183,32 +169,29 @@ class JavaAudioOutput(par: App, adi: AudioDeviceInfo) extends AudioOutputDevice
         true
         }
         
+    def sampleRate =
+        44100.0
+        
     /*
      * What we expect is an array of doubles, -1.0 to 1.0
      */
     def write(inbuf: Array[Double]) : Boolean =
         {
-        var bptr = 0
         for (ival <- inbuf)
             {
-            resampler.interpolate(ival) ( v =>
+            val iv = (doubleToShort * ival).toInt
+            val hi = ((iv >> 8) & 0xff).toByte
+            val lo = ((iv     ) & 0xff).toByte
+            buf(bptr) = hi
+            bptr += 1
+            buf(bptr) = lo
+            bptr += 1
+            if (bptr >= bufsize)
                 {
-                val iv = (v * 32767.0).toInt
-                val hi = ((iv >> 8) & 0xff).toByte
-                val lo = ((iv     ) & 0xff).toByte
-                //par.trace("iv:" + iv)
-                buf(bptr) = hi
-                bptr += 1
-                buf(bptr) = lo
-                bptr += 1
-                if (bptr >= bufsize)
-                    {
-                    line.write(buf, 0, bufsize)
-                    bptr = 0
-                    }
-                })
+                line.write(buf, 0, bufsize)
+                bptr = 0
+                }
             }
-        line.write(buf, 0, bptr)
         true
         }
 

@@ -35,16 +35,9 @@ import org.bdigi.*;
 
 class AudioInput implements AudioInputDevice
 {
-    private int rate;
-    private int config;
-    private int format;
-    private int bufsize;
     private AudioRecord input;
     private short buf[];
-    private double vbuf[];
-    private int vptr;
-    private FirResampler resampler;
-    private FirResamplerOutput output;
+    private int bufsize;
     private App par;
 
     /**
@@ -55,24 +48,13 @@ class AudioInput implements AudioInputDevice
 
     public AudioInput(App par) {
         this.par = par;
-        rate    = 44100;
-        config  = AudioFormat.CHANNEL_IN_MONO;
-        format  = AudioFormat.ENCODING_PCM_16BIT;
+        int rate    = 44100;
+        int config  = AudioFormat.CHANNEL_IN_MONO;
+        int format  = AudioFormat.ENCODING_PCM_16BIT;
         bufsize = AudioRecord.getMinBufferSize(rate, config, format);
         //0 = MediaRecorder.AudioSource.DEFAULT, tough to import
         input = new AudioRecord(0, rate, config, format, bufsize);
         buf  = new short[bufsize];
-        vbuf = new double[bufsize];
-        vptr = 0;
-        resampler = new FirResampler(6);
-        output = new FirResamplerOutput()
-            {
-            public void apply(double v)
-                {
-                vbuf[vptr++] = v;
-                }
-            };
-
     }
 
 
@@ -87,7 +69,7 @@ class AudioInput implements AudioInputDevice
 
     @Override
     public double sampleRate() {
-        return 7350.0;
+        return 44100.0;
     }
 
     @Override
@@ -107,11 +89,9 @@ class AudioInput implements AudioInputDevice
         int count = input.read(buf, 0, bufsize);
         if (count < 0)
             return scala.Option.apply(null);
-        for (int i=0 ; i < count ; i++)
-            resampler.decimateToOutput(shortToDouble * buf[i], output);
-        double packet[] = new double[vptr];
-        System.arraycopy(packet, 0, vbuf, 0, vptr);
-        vptr = 0;
+        double packet[] = new double[count];
+        for (int i= 0 ; i < count ; i++)
+            packet[i] = shortToDouble * buf[i];
         return scala.Option.apply(packet);
     }
 

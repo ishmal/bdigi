@@ -86,31 +86,6 @@ class FirResampler(decimation: Int)
         }
         
         
-    def decimateToOutput(sample: Complex)(f: FirResamplerComplexOutput) =
-        {
-        delayIndex = (delayIndex + minus1) % size
-        delayLineX(delayIndex) = sample
-        val poly = polys(phase)
-        var idx = delayIndex
-        for (coeff <- poly)
-            {
-            val v = delayLineX(idx)
-            idx = (idx + 1) % size
-            rsum += coeff * v.r           
-            isum += coeff * v.i          
-            }
-        phase += 1
-        if (phase >= decimation)
-            {
-            phase = 0
-            f(Complex(rsum, isum))
-            rsum = 0.0
-            isum = 0.0
-            }
-        }
-        
-        
-        
     /**
      * Generic decimator method
      */
@@ -135,32 +110,6 @@ class FirResampler(decimation: Int)
             }
         }
         
-    /**
-     * Generic decimator method
-     */
-    def decimateToOutput(sample: Double)(f: FirResamplerOutput) =
-        {
-        delayIndex = (delayIndex + minus1) % size
-        delayLine(delayIndex) = sample
-        val poly = polys(phase)
-        var idx = delayIndex
-        for (coeff <- poly)
-            {
-            val v = delayLine(idx)
-            idx = (idx + 1) % size
-            sum += coeff * v            
-            }
-        phase += 1
-        if (phase >= decimation)
-            {
-            phase = 0
-            f(sum)
-            sum = 0.0
-            }
-        }
-        
-        
-
     def interpolate(sample: Complex)(f: Complex=>Unit) =
         {
         delayIndex = (delayIndex + minus1) % size
@@ -181,27 +130,6 @@ class FirResampler(decimation: Int)
             }
         }
         
-    def interpolateToOutput(sample: Complex)(f: FirResamplerComplexOutput) =
-        {
-        delayIndex = (delayIndex + minus1) % size
-        delayLineX(delayIndex) = sample
-        for (poly <- polys)
-            {
-            var idx = delayIndex
-            var rsum = 0.0
-            var isum = 0.0
-            for (coeff <- poly)
-                {
-                val v = delayLineX(idx)
-                rsum += v.r * coeff
-                isum += v.i * coeff
-                idx = (idx + 1) % size
-                }
-            f(Complex(rsum, isum)*decimation)
-            }
-        }
-        
-
     def interpolate(sample: Double)(f: Double => Unit) =
         {
         delayIndex = (delayIndex + minus1) % size
@@ -220,23 +148,6 @@ class FirResampler(decimation: Int)
             }
         }
 
-    def interpolateToOutput(sample: Double)(f: FirResamplerOutput) =
-        {
-        delayIndex = (delayIndex + minus1) % size
-        delayLine(delayIndex) = sample
-        for (poly <- polys)
-            {
-            var idx = delayIndex
-            var sum = 0.0
-            for (coeff <- poly)
-                {
-                val v = delayLine(idx)
-                sum += v * coeff
-                idx = (idx + 1) % size
-                }
-            f(sum*decimation)
-            }
-        }
 
 }
 

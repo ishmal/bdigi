@@ -122,12 +122,10 @@ class App
             }
         }
     
-
+    //44100.0 / 6
     def sampleRate =
         {
-        val fs = if (inputDevice.isDefined) inputDevice.get.sampleRate else 7350.0
-        //trace("fs:" + fs)
-        fs
+        7350.0
         }
 		
     val wf = new WaterfallFactory(this, 3072,  sampleRate, 2500.0)
@@ -295,6 +293,11 @@ class App
     }//TRLoop
     
     
+    val decimator    = new FirResampler(6)
+    val interpolator = new FirResampler(6)
+    val txbuf = Array.ofDim[Double](512)
+    var txptr = 0
+
     def doRx(loop: TRLoop) =
         {
         if (inputDevice.isDefined)
@@ -308,8 +311,11 @@ class App
                 {
                 for (v <- res.get)
                     {
-                    wf.update(v)(ps => updateSpectrum(ps))
-                    mode.receive(v)
+                    decimator.decimate(v)(iv =>
+                        {
+                        wf.update(iv)(ps => updateSpectrum(ps))
+                        mode.receive(iv)
+                        })
                     }
                 }
             }
@@ -318,6 +324,23 @@ class App
     
     def doTx(loop: TRLoop) =
         {
+        def upAndOut(buf: Array[Double]) =
+            {
+            for (v <- buf)
+                {
+                interpolator.interpolate(v)( iv=>
+                    {
+                    txbuf(txptr) = iv
+                    txptr += 1
+                    if (txptr >= txbuf.size)
+                        {
+                        //trace("data:" + txbuf)
+                        outputDevice.get.write(txbuf)
+                        txptr = 0
+                        }
+                    })
+                }
+            }
         val preamble = mode.getTransmitBeginData
         if (preamble.isDefined)
             outputDevice.get.write(preamble.get)
@@ -330,8 +353,6 @@ class App
                 }
             else
                 {
-                //trace("data:" + res.get.size)
-                outputDevice.get.write(res.get)
                 }
             }
         val postamble = mode.getTransmitEndData
