@@ -362,7 +362,6 @@ class App
      * Let's set things up
      */
     configLoad
-    start    
 
     
 

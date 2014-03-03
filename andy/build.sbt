@@ -13,3 +13,10 @@ install <<= install in Android
 
 libraryDependencies += "com.google.android" % "support-v4" % "r7"
 
+proguardScala in Android := true
+
+proguardOptions in Android ++= Seq(
+    "-dontwarn javax.sound.sampled.**",
+    "-dontwarn java.awt.**",
+    "-dontwarn junit.**"
+)

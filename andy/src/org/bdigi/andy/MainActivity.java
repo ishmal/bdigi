@@ -58,7 +58,7 @@ import org.bdigi.*;
 public class MainActivity extends FragmentActivity {
 
 
-class MainApp extends App {
+public class MainApp extends App {
 
     //########################################
     //# Logging
@@ -83,6 +83,22 @@ class MainApp extends App {
 	    }
 	
 
+    //########################################
+    //# Audio I/O
+    //########################################
+    
+    public void setInputDevice(String deviceName)
+        {
+        inputDevice_$eq(scala.Option.apply((AudioInputDevice)new org.bdigi.andy.AudioInput(this)));
+        }
+    
+    public void setOutputDevice(String deviceName)
+        {
+        outputDevice_$eq(scala.Option.apply((AudioOutputDevice)new org.bdigi.andy.AudioOutput(this)));
+        }
+    
+  
+    
     //########################################
     //# Config
     //########################################
@@ -153,6 +169,14 @@ class MainApp extends App {
     @Override
     public void adjust()
         {
+        }
+        
+    public MainApp()
+        {
+        super();
+        setInputDevice("");
+        setOutputDevice("");
+        super.start();
         }
 
 }

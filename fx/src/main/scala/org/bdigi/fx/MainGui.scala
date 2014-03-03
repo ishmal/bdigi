@@ -365,7 +365,7 @@ class MainController(stage: Stage) extends App
             audioWaterfall.updateScope(x, y)
         }
 
-        
+    start;        
 }
 
 

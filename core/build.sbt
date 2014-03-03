@@ -5,3 +5,4 @@ libraryDependencies ++= Seq(
     "net.sourceforge.jtransforms" % "jtransforms"     % "2.4.0"
 )
 
+exportJars := true

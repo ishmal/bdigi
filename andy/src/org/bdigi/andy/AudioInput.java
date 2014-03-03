@@ -43,6 +43,7 @@ class AudioInput implements AudioInputDevice
     private short buf[];
     private double vbuf[];
     private FirResampler resampler;
+    private App par;
 
     /**
      * Convert between   0-32767  <->  0.0-1.0
@@ -50,7 +51,8 @@ class AudioInput implements AudioInputDevice
     private final double doubleToShort  = 32767.0;
     private final double shortToDouble  = 1.0 / 32768.0;
 
-    public AudioInput() {
+    public AudioInput(App par) {
+        this.par = par;
         rate    = 44100;
         config  = AudioFormat.CHANNEL_IN_MONO;
         format  = AudioFormat.ENCODING_PCM_16BIT;
@@ -63,19 +65,15 @@ class AudioInput implements AudioInputDevice
 
     }
 
-    /***
-     * Mixin the scala trait Logged
-     *
-    @Override
+
     public void error(String msg) {
-        Logged$class.error(this, msg);
+        par.error("AudioInput error: " + msg);
     }
 
-    @Override
+
     public void trace(String msg) {
-        Logged$class.trace(this, msg);
+        par.trace("AudioInput: " + msg);
     }
-    */
 
     @Override
     public double sampleRate() {

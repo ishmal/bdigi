@@ -45,30 +45,27 @@ class AudioOutput implements AudioOutputDevice
     private int mode;
     private AudioTrack output;
     private short[] buf;
+    private App par;
 
-    /***
-     * Mixin the scala trait Logged
-
-    @Override
-    public void error(String msg) {
-        Logged$class.error(this, msg);
-    }
-
-    @Override
-    public void trace(String msg) {
-        Logged$class.trace(this, msg);
-    }
-    */
-
-    public AudioOutput() {
+    public AudioOutput(App par) {
+        this.par = par;
         rate = 44100;
         streamtype = AudioManager.STREAM_MUSIC;
-        config = AudioFormat.CHANNEL_IN_MONO;
+        config = AudioFormat.CHANNEL_OUT_MONO;
         format = AudioFormat.ENCODING_PCM_16BIT;
         bufsize = AudioTrack.getMinBufferSize(rate, config, format);
         mode = AudioTrack.MODE_STREAM;
         output = new AudioTrack(streamtype, rate, config, format, bufsize, mode);
         buf  = new short[bufsize];
+    }
+
+    public void error(String msg) {
+        par.error("AudioOutput error: " + msg);
+    }
+
+
+    public void trace(String msg) {
+        par.trace("AudioOutput: " +  msg);
     }
 
     public double sampleRate() {
