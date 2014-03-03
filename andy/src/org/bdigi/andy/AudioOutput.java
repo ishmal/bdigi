@@ -37,26 +37,46 @@ import org.bdigi.*;
 
 class AudioOutput implements AudioOutputDevice
 {
-    private int rate;
-    private int streamtype;
-    private int config;
-    private int format;
     private int bufsize;
-    private int mode;
     private AudioTrack output;
-    private short[] buf;
+    private short[] sbuf;
+    private int sptr;
+    private int slen;
     private App par;
+    private FirResampler resampler;
+    private FirResamplerOutput receiver;
+
+    /**
+     * Convert between   0-32767  <->  0.0-1.0
+     */
+    private final double doubleToShort  = 32767.0;
+    private final double shortToDouble  = 1.0 / 32768.0;
+
 
     public AudioOutput(App par) {
         this.par = par;
-        rate = 44100;
-        streamtype = AudioManager.STREAM_MUSIC;
-        config = AudioFormat.CHANNEL_OUT_MONO;
-        format = AudioFormat.ENCODING_PCM_16BIT;
+        int rate = 44100;
+        int streamtype = AudioManager.STREAM_MUSIC;
+        int config = AudioFormat.CHANNEL_OUT_MONO;
+        int format = AudioFormat.ENCODING_PCM_16BIT;
         bufsize = AudioTrack.getMinBufferSize(rate, config, format);
-        mode = AudioTrack.MODE_STREAM;
+        int mode = AudioTrack.MODE_STREAM;
         output = new AudioTrack(streamtype, rate, config, format, bufsize, mode);
-        buf  = new short[bufsize];
+        sbuf  = new short[bufsize];
+        slen = bufsize;
+        resampler = new FirResampler(6);
+        receiver = new FirResamplerOutput()
+            {
+            public void apply(double v)
+                {
+                sbuf[sptr++] = (short)(doubleToShort * v);
+                if (sptr >= slen)
+                    {
+                    output.write(sbuf, 0, slen);
+                    sptr = 0;
+                    }
+                }
+            };
     }
 
     public void error(String msg) {
@@ -69,30 +89,17 @@ class AudioOutput implements AudioOutputDevice
     }
 
     public double sampleRate() {
-        return 8000.0;
+        return 7350.0;
     }
     
     public boolean write(double inbuf[]) {
-        return false;
-        /*
-        var bufptr = 0
-        for (iv <- inbuf)
+        int bufptr = 0;
+        int len = inbuf.length;
+        for (int i=0 ; i < len ; i++)
             {
-            interpolator.update(iv)( v =>
-                {
-                val sval = v.v.toShort
-                buf(bufptr) = sval
-                bufptr += 1
-                if (bufptr >= bufsize)
-                    {
-                    output.write(buf, 0, bufsize)
-                    bufptr += 1
-                    }
-                })
+            resampler.interpolateToOutput(inbuf[i], receiver);
             }
-        output.write(buf, 0, bufptr)
-        true
-        */
+        return true;
         }
 
     public boolean open()
