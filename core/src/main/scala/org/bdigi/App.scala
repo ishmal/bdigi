@@ -305,10 +305,12 @@ class App
             val res = inputDevice.get.read
             if (res.isEmpty)
                 {
+                //trace("empty")
                 //cont = false
                 }
             else
                 {
+                trace("ok")
                 for (v <- res.get)
                     {
                     decimator.decimate(v)(iv =>

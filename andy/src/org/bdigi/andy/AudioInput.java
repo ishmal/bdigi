@@ -52,9 +52,14 @@ class AudioInput implements AudioInputDevice
         int config  = AudioFormat.CHANNEL_IN_MONO;
         int format  = AudioFormat.ENCODING_PCM_16BIT;
         bufsize = AudioRecord.getMinBufferSize(rate, config, format);
-        //0 = MediaRecorder.AudioSource.DEFAULT, tough to import
-        input = new AudioRecord(0, rate, config, format, bufsize);
-        buf  = new short[bufsize];
+        if (bufsize < 0) {
+            error("Invalid format for this device");
+        } else {
+            //0 = MediaRecorder.AudioSource.DEFAULT, tough to import
+            //1 = MIC
+            input = new AudioRecord(0, rate, config, format, bufsize);
+            buf  = new short[bufsize];
+        }
     }
 
 
@@ -75,11 +80,13 @@ class AudioInput implements AudioInputDevice
     @Override
     public boolean open()
     {
+        input.startRecording();
         return true;
     }
 
     @Override
     public boolean close() {
+        input.stop();
         return true;
     }
     

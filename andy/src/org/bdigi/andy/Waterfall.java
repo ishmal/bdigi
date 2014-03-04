@@ -60,6 +60,7 @@ class DrawArea extends SurfaceView implements SurfaceHolder.Callback
         pixels = new int[size];
         img = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         bins = 300;
+        psIndices = new int[width];
         for (int i= 0 ; i < width ; i++)
             psIndices[i] = i * bins / width;
         getHolder().addCallback(this);
@@ -81,8 +82,19 @@ class DrawArea extends SurfaceView implements SurfaceHolder.Callback
         }
         return colors;
     }
+    
+    private int pslen = -1;
 	
-	private void updateBuffer(double ps[]) {
+	private void updateBuffer(int ps[]) {
+	
+	    //if power spectrum length changes, we need to recalc
+	    if (pslen != ps.length) {
+	        pslen = ps.length;
+	        for (int i = 0 ; i < width ; i++) {
+	            psIndices[i] = i * pslen / width;
+	        }    
+	    }
+	    
 		/**
 		 * First scroll the image up one pixel
 		 */
@@ -93,9 +105,9 @@ class DrawArea extends SurfaceView implements SurfaceHolder.Callback
 		 * Now calculate and plot the new data into the bottom row
 		 */
         for (int x = 0 ; x < width ; x++) {
-        	double v = ps[psIndices[x]];
+        	int v = ps[psIndices[x]];
         	double scaledv = Math.log(v) * 60.0;
-        	int clridx = ((int)scaledv) & 0xff;
+        	int clridx = v & 0xff;
         	pixels[yp] = colors[clridx];
         	}
 	    }
@@ -105,10 +117,10 @@ class DrawArea extends SurfaceView implements SurfaceHolder.Callback
 	 * Called from another thread
 	 * @param arr an array of doubles describing the power spectrum to display
 	 */
-    public void update(double arr[]) {
+    public void update(int ps[]) {
         SurfaceHolder holder = getHolder();
         Canvas c = holder.lockCanvas(null);
-        updateBuffer(arr);
+        updateBuffer(ps);
         img.setPixels(pixels, 0, width, 0, 0, width, height);
         c.drawBitmap(img, 0f, 0f, null);
         holder.unlockCanvasAndPost(c);    
@@ -117,7 +129,6 @@ class DrawArea extends SurfaceView implements SurfaceHolder.Callback
 	@Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
         {
-        trace("surfaceChanged:" + width + " ," + height);
 	    }
 
 	@Override public void surfaceCreated(SurfaceHolder holder)
@@ -155,9 +166,10 @@ class DrawArea extends SurfaceView implements SurfaceHolder.Callback
         drawArea = new DrawArea(x,y);
         }
 
-    public void update(double arr[])
+    public void update(int ps[])
         {
-        drawArea.update(arr);
+        trace("update");
+        drawArea.update(ps);
         }
 
 

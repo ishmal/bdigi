@@ -164,6 +164,9 @@ public class MainApp extends App {
     @Override
     public void updateSpectrum(int ps[])
         {
+        trace("updatespectrum");
+        if (waterfall != null)
+            waterfall.update(ps);
         }
     
     @Override
@@ -186,6 +189,7 @@ public class MainApp extends App {
 	private MyAdapter adapter;
 	private ArrayList<LayoutFragment> fragments;
 	private static MainActivity _instance;
+	private Waterfall waterfall;
 	private MainApp _app;
 
 	public static MainActivity getInstance() {
@@ -224,6 +228,7 @@ public class MainApp extends App {
 		fragments = getFragments();
 		adapter = new MyAdapter(getSupportFragmentManager(), fragments);
 		viewPager.setAdapter(adapter);
+		waterfall = (Waterfall) findViewById(R.id.waterfall);
 	}
 	
 	private ArrayList<LayoutFragment> getFragments() {
