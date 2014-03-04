@@ -117,6 +117,7 @@ class DrawArea extends SurfaceView implements SurfaceHolder.Callback
 	@Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
         {
+        trace("surfaceChanged:" + width + " ," + height);
 	    }
 
 	@Override public void surfaceCreated(SurfaceHolder holder)
@@ -140,6 +141,14 @@ class DrawArea extends SurfaceView implements SurfaceHolder.Callback
         this.par = par;
         drawArea = new DrawArea(100,100);
         }
+        
+    public void error(String msg) {
+        par.error("Waterfall: " + msg);
+    }
+
+    public void trace(String msg) {
+        par.trace("Waterfall: " + msg);
+    }
 
     @Override public void onSizeChanged(int x, int y, int oldx, int oldy)
         {
