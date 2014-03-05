@@ -182,7 +182,7 @@ public class MainApp extends App {
         super();
         setInputDevice("");
         setOutputDevice("");
-        super.start();
+        startProcessing();
         }
 
 }
@@ -198,10 +198,6 @@ public class MainApp extends App {
 		return _instance;
 	}
 
-	public App getApp() {
-		return _app;
-	}
-	
     public void trace(String msg)
         {
         Log.i("bdigi", msg);

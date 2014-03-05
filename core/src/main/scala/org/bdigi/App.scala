@@ -366,14 +366,14 @@ class App
 
     var trloop = new TRLoop
     
-    def start =
+    def startProcessing =
         {
         trloop.abort
         trloop = new TRLoop
         trloop.start
         }
 
-    def stop =
+    def stopProcessing =
         {
         inputDevice.foreach(_.close)
         outputDevice.foreach(_.close)

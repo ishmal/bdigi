@@ -31,18 +31,18 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
 import android.content.Context;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.os.Handler;
 import android.util.AttributeSet;
 
-class Waterfall extends SurfaceView implements SurfaceHolder.Callback
+class Waterfall extends View
 {
 
     private int imgWidth;
     private int imgHeight;
     private int imgSize;
+    private int imgTopRow;
     private Bitmap img;
     private int pixels[];
     private int colors[];
@@ -70,15 +70,10 @@ class Waterfall extends SurfaceView implements SurfaceHolder.Callback
         colors = makeColors();
         setup();
         setBackgroundColor(0xff00ff00);
-        setMinimumHeight(100);
-        invalidate();
         animator = new Animator(100);
         animator.start();
         psbuf = new int[500];
         pslen = -1;
-        setLayoutParams(new LinearLayout.LayoutParams(
-                         LinearLayout.LayoutParams.FILL_PARENT,
-                         LinearLayout.LayoutParams.FILL_PARENT));
     }
     
     private void setup() {
@@ -87,14 +82,13 @@ class Waterfall extends SurfaceView implements SurfaceHolder.Callback
         imgHeight = getHeight();
         if (imgHeight <= 0) imgHeight = 10;
         imgSize   = imgWidth * imgHeight;
+        imgTopRow = imgSize - imgWidth;
         pixels    = new int[imgSize];
         img       = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888);
         bins      = 300;
         psIndices = new int[imgWidth];
         for (int i= 0 ; i < imgWidth ; i++)
             psIndices[i] = i * bins / imgWidth;
-        getHolder().addCallback(this);
-    
     }
 
 
@@ -109,7 +103,6 @@ class Waterfall extends SurfaceView implements SurfaceHolder.Callback
             col = (col << 8) + g;
             col = (col << 8) + b;
             colors[i] = col;
-
         }
         return colors;
     }
@@ -127,7 +120,7 @@ class Waterfall extends SurfaceView implements SurfaceHolder.Callback
 		/**
 		 * First scroll the image up one pixel
 		 */
-		int yp = imgSize - imgWidth;  //first pixel of last row
+		int yp = imgTopRow;  //first pixel of last row
 		System.arraycopy(pixels, imgWidth, pixels, 0, yp); //shift up one row
 
 		/**
@@ -136,7 +129,7 @@ class Waterfall extends SurfaceView implements SurfaceHolder.Callback
         for (int x = 0 ; x < imgWidth ; x++) {
         	int v      = psbuf[psIndices[x]];
         	int clridx = v & 0xff;
-        	pixels[yp] = colors[clridx];
+        	pixels[yp++] = colors[clridx];
         	}
 	    }
         
@@ -148,31 +141,27 @@ class Waterfall extends SurfaceView implements SurfaceHolder.Callback
     @Override 
     public void onDraw(Canvas c) {
         super.onDraw(c);
+        //randomTestPs();
         //trace("redraw:");
         redrawImage();
         img.setPixels(pixels, 0, imgWidth, 0, 0, imgWidth, imgHeight);
         c.drawBitmap(img, 0f, 0f, null);
         }
+        
+    private void randomTestPs() {
+        int len = 500;
+        int ps[] = new int[len];
+        for (int i=0 ; i < len ; i++)
+            ps[i] = (int) (Math.random() * 255.0);
+        psbuf = ps.clone();
+        //trace("psbuf: " + psbuf.length);
+    }
 
     public void update(int ps[]) {
         psbuf = ps.clone();
+        trace("len: " + psbuf.length);
         }
 
-	@Override 
-	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
-        {
-	    }
-
-	@Override 
-	public void surfaceCreated(SurfaceHolder holder)
-	    {
-	    }
-
-	@Override 
-	public void surfaceDestroyed(SurfaceHolder holder)
-	    {
-	    }
-	        					
     @Override 
     public void onSizeChanged(int x, int y, int oldx, int oldy)
         {

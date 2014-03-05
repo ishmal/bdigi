@@ -275,7 +275,7 @@ class MainController(stage: Stage) extends App
         
         
     
-    def doClose      (evt : Event) = { stop ; Platform.exit }
+    def doClose      (evt : Event) = { stopProcessing ; Platform.exit }
     def doClear      (evt : Event) = { consoleText.clear ; inputText.clear }
     def doLog        (evt : Event) = logDialog.show
     def doAbout      (evt : Event) = aboutDialog.show
@@ -365,7 +365,7 @@ class MainController(stage: Stage) extends App
             audioWaterfall.updateScope(x, y)
         }
 
-    start;        
+    startProcessing        
 }
 
 
