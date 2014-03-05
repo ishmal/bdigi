@@ -310,7 +310,7 @@ class App
                 }
             else
                 {
-                trace("ok")
+                //trace("ok")
                 for (v <- res.get)
                     {
                     decimator.decimate(v)(iv =>

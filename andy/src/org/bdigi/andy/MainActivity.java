@@ -49,6 +49,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 
 import org.bdigi.*;
 
@@ -187,7 +190,6 @@ public class MainApp extends App {
 	
 	private ViewPager viewPager;
 	private MyAdapter adapter;
-	private ArrayList<LayoutFragment> fragments;
 	private static MainActivity _instance;
 	private Waterfall waterfall;
 	private MainApp _app;
@@ -221,23 +223,15 @@ public class MainApp extends App {
 		super.onCreate(savedInstanceState);
 		_instance = this;
 		_app = new MainApp();
+		waterfall = (Waterfall) findViewById (R.id.waterfall);
 		setContentView(R.layout.activity_main);
 		viewPager = (ViewPager) findViewById (R.id.viewPager);
 		PageListener pl = new PageListener();
 		viewPager.setOnPageChangeListener(pl);
-		fragments = getFragments();
-		adapter = new MyAdapter(getSupportFragmentManager(), fragments);
+		adapter = new MyAdapter(getSupportFragmentManager());
 		viewPager.setAdapter(adapter);
-		waterfall = (Waterfall) findViewById(R.id.waterfall);
 	}
 	
-	private ArrayList<LayoutFragment> getFragments() {
-		ArrayList<LayoutFragment> xs = new ArrayList<LayoutFragment>();
-		xs.add(LayoutFragment.getInstance(MainActivity.this, "Home",   R.layout.home));
-		xs.add(LayoutFragment.getInstance(MainActivity.this, "Config", R.layout.config));
-		return xs;		
-	}
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -274,33 +268,37 @@ public class MainApp extends App {
 	
 	private class PageListener extends SimpleOnPageChangeListener {
         public void onPageSelected(int position) {
-            LayoutFragment frag = fragments.get(position);
-            String msg = "bdigi : " + frag.name;
-            setTitle(msg);
-            trace(msg);
         }
     }
+
+
+    
+    
 	
 	class MyAdapter extends FragmentPagerAdapter
 	{
-		ArrayList<LayoutFragment> fragments;
-
-		public MyAdapter(FragmentManager fm, ArrayList<LayoutFragment> fragments) {
+		public MyAdapter(FragmentManager fm) {
 			super(fm);
-			this.fragments = fragments;
 		}
 
 		@Override
         public int getCount() {
-            return fragments.size();
+            return 2;
         }
 
         @Override
         public Fragment getItem(int position) {
-            return fragments.get(position);
+            switch(position) {
+                case 0 : return HomeFragment.newInstance();
+                case 1 : return ConfigFragment.newInstance();
+                default : return HomeFragment.newInstance();
+            }
         }
 	}
 	
 
 
 }
+
+
+
