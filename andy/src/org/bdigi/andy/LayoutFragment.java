@@ -60,8 +60,16 @@ public class LayoutFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater,
 	                           ViewGroup container,
 	                           Bundle savedInstanceState) {
-	    View result = inflater.inflate(rid, container, false);
-	    return result;
+	    try 
+	        {
+	        View result = inflater.inflate(rid, container, false);
+	        return result;
+	        }
+	    catch (Exception e)
+	        {
+	        par.trace("Failed on " + name);
+	        return null;
+	        }
 	}
 
 
