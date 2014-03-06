@@ -36,9 +36,15 @@ import android.widget.LinearLayout;
 import android.os.Handler;
 import android.util.AttributeSet;
 
+import android.graphics.Color;
+import android.graphics.Paint;
+
+import org.bdigi.Constants;
+
 class Waterfall extends View
 {
-
+    private final double MAX_FREQ = Constants.highFrequency();
+    private final int TUNER_HEIGHT = 40;
     private int imgWidth;
     private int imgHeight;
     private int imgSize;
@@ -64,12 +70,13 @@ class Waterfall extends View
     }
     
     public Waterfall(Context par, AttributeSet attrs) {
+    
         super(par, attrs);
         this.par = (MainActivity) par;
         trace("i got called");
         colors = makeColors();
         setup();
-        setBackgroundColor(0xff00ff00);
+        //setBackgroundColor(0xff00ff00);
         animator = new Animator(100);
         animator.start();
         psbuf = new int[500];
@@ -79,7 +86,7 @@ class Waterfall extends View
     private void setup() {
         imgWidth  = getWidth();
         if (imgWidth <= 0) imgWidth = 10;
-        imgHeight = getHeight();
+        imgHeight = getHeight() - TUNER_HEIGHT;
         if (imgHeight <= 0) imgHeight = 10;
         imgSize   = imgWidth * imgHeight;
         imgTopRow = imgSize - imgWidth;
@@ -108,7 +115,7 @@ class Waterfall extends View
     }
     
 	
-	private void redrawImage() {
+    private void redrawImage() {
 	    //if power spectrum length changes, we need to recalc
 	    if (pslen != psbuf.length) {
 	        pslen = psbuf.length;
@@ -132,7 +139,70 @@ class Waterfall extends View
         	pixels[yp++] = colors[clridx];
         	}
 	    }
+	    
+	double freq = 1234.5;
+	double bw = 31.25;
         
+    private void drawTuner(Canvas c) { 
+
+        float width = getWidth();
+        float height = getHeight();
+        float curFreq = (float) freq;
+        float curBw = (float) bw;
+        float maxFreq = (float) MAX_FREQ;
+        
+        float top = height - TUNER_HEIGHT;
+        Paint p = new Paint();
+        
+        p.setColor(Color.BLACK);
+        p.setStyle(Paint.Style.FILL);
+        c.drawRect(0, top, width, TUNER_HEIGHT, p);
+        
+        //draw the tickmarks
+        float hzWidth   = width / maxFreq;
+        int tickRes   = 25;
+        float tickSpace = hzWidth * tickRes;
+        int nrTicks = (int)(maxFreq / tickRes);
+
+        for (int i=0 ; i < nrTicks ; i++)
+            {
+            int tick = i * tickRes;
+            float hx = i * tickSpace;
+            if (tick % 500 == 0)
+                {
+                p.setColor(Color.GREEN);
+                c.drawRect(hx, top, hx+2.0f, top+10.0f, p);
+                String str = String.format("%d", tick);
+                p.setColor(Color.CYAN);
+                c.drawText(str, hx-16.0f, top+19.0f, p);
+                }
+            else if (tick % 100 == 0)
+                {
+                p.setColor(Color.GREEN);
+                c.drawRect(hx, top, hx+2.0f, top+5.0f, p);
+                }
+            else
+                {
+                p.setColor(Color.GREEN);
+                c.drawRect(hx, top, hx+2.0f, top+2.0f, p);
+                }
+            }
+
+        
+        p.setColor(Color.GREEN);
+        float fx = width * curFreq / maxFreq;
+        c.drawRect(fx, top+3f, fx+2.0f, top+10f, p);
+        
+        if (bw > 0.0)
+            {
+            p.setColor(Color.RED);
+            float lox = width * (curFreq - curBw * 0.5f) / maxFreq;
+            c.drawRect(lox, top+5f, lox+1.0f, top+10f, p);
+            float hix = width * (curFreq + curBw * 0.5f) / maxFreq;
+            c.drawRect(hix, top+5f, hix+1.0f, top+10f, p);
+            }
+        }
+
 
 	/**
 	 * Called from another thread
@@ -144,6 +214,7 @@ class Waterfall extends View
         //randomTestPs();
         //trace("redraw:");
         redrawImage();
+        drawTuner(c);
         img.setPixels(pixels, 0, imgWidth, 0, 0, imgWidth, imgHeight);
         c.drawBitmap(img, 0f, 0f, null);
         }
@@ -159,7 +230,6 @@ class Waterfall extends View
 
     public void update(int ps[]) {
         psbuf = ps.clone();
-        trace("len: " + psbuf.length);
         }
 
     @Override 
@@ -170,6 +240,17 @@ class Waterfall extends View
         setup();
         }
 
+    /*
+    @Override 
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+         int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
+         int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
+         //this.setMeasuredDimension(parentWidth, parentHeight/3);
+         this.setLayoutParams(new LinearLayout.LayoutParams(parentWidth,parentHeight/3));
+         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+    */
+    
     class Animator implements Runnable
     {
         private Handler handler;

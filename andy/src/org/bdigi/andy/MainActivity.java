@@ -49,6 +49,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.LinearLayout;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -90,14 +91,20 @@ public class MainApp extends App {
     //# Audio I/O
     //########################################
     
+    @Override
     public void setInputDevice(String deviceName)
         {
-        inputDevice_$eq(scala.Option.apply((AudioInputDevice)new org.bdigi.andy.AudioInput(this)));
+        AudioInputDevice input = (AudioInputDevice)new org.bdigi.andy.AudioInput(this);
+        input.open();
+        inputDevice_$eq(scala.Option.apply(input));
         }
     
+    @Override
     public void setOutputDevice(String deviceName)
         {
-        outputDevice_$eq(scala.Option.apply((AudioOutputDevice)new org.bdigi.andy.AudioOutput(this)));
+        AudioOutputDevice output = (AudioOutputDevice)new org.bdigi.andy.AudioOutput(this);
+        output.open();
+        outputDevice_$eq(scala.Option.apply(output));
         }
     
   
@@ -151,6 +158,8 @@ public class MainApp extends App {
     @Override
     public void puttext(String msg)
         {
+        if (outText != null)
+            outText.append(msg);
         }
     
     @Override
@@ -167,9 +176,10 @@ public class MainApp extends App {
     @Override
     public void updateSpectrum(int ps[])
         {
-        trace("updatespectrum");
         if (waterfall != null)
             waterfall.update(ps);
+        else
+            trace("no waterfall");
         }
     
     @Override
@@ -190,13 +200,10 @@ public class MainApp extends App {
 	
 	private ViewPager viewPager;
 	private MyAdapter adapter;
-	private static MainActivity _instance;
 	private Waterfall waterfall;
+	private EditText  inText;
+	private TextView  outText;
 	private MainApp _app;
-
-	public static MainActivity getInstance() {
-		return _instance;
-	}
 
     public void trace(String msg)
         {
@@ -217,15 +224,16 @@ public class MainApp extends App {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		_instance = this;
-		_app = new MainApp();
-		waterfall = (Waterfall) findViewById (R.id.waterfall);
 		setContentView(R.layout.activity_main);
+		waterfall = (Waterfall) findViewById (R.id.waterfall);
+		if (waterfall == null)
+		    error("problem with the waterfall");
 		viewPager = (ViewPager) findViewById (R.id.viewPager);
 		PageListener pl = new PageListener();
 		viewPager.setOnPageChangeListener(pl);
 		adapter = new MyAdapter(getSupportFragmentManager());
 		viewPager.setAdapter(adapter);
+		_app = new MainApp();
 	}
 	
 	@Override
@@ -259,17 +267,23 @@ public class MainApp extends App {
 	    String name    = getInputText(R.id.cfg_name);
 	    String qth     = getInputText(R.id.cfg_qth);
 	    String locator = getInputText(R.id.cfg_locator);
-	    trace("call:" + call);
+	    //trace("call:" + call);
+	}
+	
+	public void setControls(Waterfall wf, TextView textView, EditText editText) {
+	    waterfall = wf;
+	    outText = textView;
+	    inText = editText;
 	}
 	
 	private class PageListener extends SimpleOnPageChangeListener {
         public void onPageSelected(int position) {
+            error("page: " + position);
         }
     }
 
 
-    
-    
+     
 	
 	class MyAdapter extends FragmentPagerAdapter
 	{

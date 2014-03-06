@@ -47,7 +47,7 @@ object Constants
     /**
      * The high bound of our desired band
      */                  
-    val highFrequency = 2800.0
+    val highFrequency = 2500.0
     
     /**
      * The width of our desired band
@@ -128,7 +128,7 @@ class App
         7350.0
         }
 		
-    val wf = new WaterfallFactory(this, 3072,  sampleRate, 2500.0)
+    val wf = new WaterfallFactory(this, 3072,  sampleRate, Constants.highFrequency)
 
 	def frequency =
 	    mode.frequency

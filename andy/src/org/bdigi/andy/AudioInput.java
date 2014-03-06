@@ -30,6 +30,7 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
+import android.media.MediaRecorder;
 
 import org.bdigi.*;
 
@@ -47,17 +48,21 @@ class AudioInput implements AudioInputDevice
     private final double shortToDouble  = 1.0 / 32768.0;
 
     public AudioInput(App par) {
-        this.par = par;
+        this.par    = par;
         int rate    = 44100;
         int config  = AudioFormat.CHANNEL_IN_MONO;
         int format  = AudioFormat.ENCODING_PCM_16BIT;
         bufsize = AudioRecord.getMinBufferSize(rate, config, format);
         if (bufsize < 0) {
-            error("Invalid format for this device");
+            error("Invalid format for this device:" + bufsize);
         } else {
-            //0 = MediaRecorder.AudioSource.DEFAULT, tough to import
+            //DEFAULT or MIC
             //1 = MIC
-            input = new AudioRecord(0, rate, config, format, bufsize);
+            input = new AudioRecord(MediaRecorder.AudioSource.DEFAULT,
+                 rate, config, format, bufsize);
+            if (input.getState() != AudioRecord.STATE_INITIALIZED) {
+                error("Not initialized"); 
+            }
             buf  = new short[bufsize];
         }
     }
@@ -94,11 +99,16 @@ class AudioInput implements AudioInputDevice
     @Override
     public scala.Option<double[]> read() {
         int count = input.read(buf, 0, bufsize);
-        if (count < 0)
+        if (count < 0) {
+            //error("read: " + count);
             return scala.Option.apply(null);
+            }
         double packet[] = new double[count];
-        for (int i= 0 ; i < count ; i++)
-            packet[i] = shortToDouble * buf[i];
+        for (int i= 0 ; i < count ; i++) {
+            short iv = buf[i];
+            double v = shortToDouble * iv;
+            packet[i] = v;
+            }
         return scala.Option.apply(packet);
     }
 
