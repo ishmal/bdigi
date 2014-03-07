@@ -28,9 +28,9 @@ public class HomeFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle)
         {
-        View v = layoutInflater.inflate(R.layout.home, viewGroup, false);
-        Waterfall wf = (Waterfall) v.findViewById(R.id.waterfall);
-        EditText intxt = (EditText) v.findViewById(R.id.intext);
+        View v         = layoutInflater.inflate(R.layout.home, viewGroup, false);
+        Waterfall wf   = (Waterfall) v.findViewById(R.id.waterfall);
+        InText intxt   = (InText) v.findViewById(R.id.intext);
         OutText outtxt = (OutText) v.findViewById(R.id.outtext);
         getParent().setControls(wf, outtxt, intxt);
         return v;

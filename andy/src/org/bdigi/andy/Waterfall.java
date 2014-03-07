@@ -193,7 +193,8 @@ class Waterfall extends View
         
         p.setColor(Color.GREEN);
         float fx = width * curFreq / maxFreq;
-        c.drawRect(fx, top+3f, fx+2.0f, top+10f, p);
+        //c.drawRect(fx, top+3f, fx+2.0f, top+10f, p);
+        c.drawRect(fx, 3f, fx+2.0f, top+10f, p);
         
         if (bw > 0.0)
             {
@@ -204,6 +205,14 @@ class Waterfall extends View
             c.drawRect(hix, top+5f, hix+1.0f, top+10f, p);
             }
         }
+        
+    private void drawScope(Canvas c) {
+    
+    
+    
+    
+    }
+    
 
 
 	/**
@@ -216,9 +225,10 @@ class Waterfall extends View
         //randomTestPs();
         //trace("redraw:");
         redrawImage();
-        drawTuner(c);
         img.setPixels(pixels, 0, imgWidth, 0, 0, imgWidth, imgHeight);
         c.drawBitmap(img, 0f, 0f, null);
+        drawTuner(c);
+        drawScope(c);
         }
         
     private void randomTestPs() {

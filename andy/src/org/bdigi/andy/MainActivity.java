@@ -146,6 +146,7 @@ public class MainApp extends App {
             }
         }
 
+
     /**
      * Override these in your client code, especially for a GUI
      */
@@ -202,7 +203,7 @@ public class MainApp extends App {
 	private ViewPager viewPager;
 	private MyAdapter adapter;
 	private Waterfall waterfall;
-	private EditText  inText;
+	private InText  inText;
 	private OutText  outText;
 	private MainApp _app;
 
@@ -264,7 +265,14 @@ public class MainApp extends App {
 	        case R.id.action_config:
 	        	viewPager.setCurrentItem(1);
 	            return true;
+	        case R.id.action_clear:
+	        	if (outText != null)
+	        	     outText.clear();
+	        	if (inText != null)
+	        	     inText.clear();
+	            return true;
 	        case R.id.action_close:
+	            _app.stopProcessing(); //kill thread and close audio devices
 	        	finish();
 	            return true;
 	        default:
@@ -285,7 +293,7 @@ public class MainApp extends App {
 	    //trace("call:" + call);
 	}
 	
-	public void setControls(Waterfall wf, OutText textView, EditText editText) {
+	public void setControls(Waterfall wf, OutText textView, InText editText) {
 	    waterfall = wf;
 	    outText = textView;
 	    inText = editText;
