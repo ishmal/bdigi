@@ -159,7 +159,7 @@ public class MainApp extends App {
     public void puttext(String msg)
         {
         if (outText != null)
-            outText.append(msg);
+            outText.puttext(msg);
         }
     
     @Override
@@ -193,6 +193,7 @@ public class MainApp extends App {
         setInputDevice("");
         setOutputDevice("");
         startProcessing();
+        mode_$eq(pskMode());
         }
 
 }
@@ -202,7 +203,7 @@ public class MainApp extends App {
 	private MyAdapter adapter;
 	private Waterfall waterfall;
 	private EditText  inText;
-	private TextView  outText;
+	private OutText  outText;
 	private MainApp _app;
 
     public void trace(String msg)
@@ -220,7 +221,17 @@ public class MainApp extends App {
 		Log.e("bdigi", msg, e);
 	    }
 	    
-
+    public void setFrequency(double freq) {
+        _app.frequency_$eq(freq);
+    }
+    
+    public double getFrequency() {
+        return _app.frequency();
+    }
+		
+    public double getBandwidth() {
+        return _app.bandwidth();
+    }
 		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -253,6 +264,9 @@ public class MainApp extends App {
 	        case R.id.action_config:
 	        	viewPager.setCurrentItem(1);
 	            return true;
+	        case R.id.action_close:
+	        	finish();
+	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
@@ -271,7 +285,7 @@ public class MainApp extends App {
 	    //trace("call:" + call);
 	}
 	
-	public void setControls(Waterfall wf, TextView textView, EditText editText) {
+	public void setControls(Waterfall wf, OutText textView, EditText editText) {
 	    waterfall = wf;
 	    outText = textView;
 	    inText = editText;

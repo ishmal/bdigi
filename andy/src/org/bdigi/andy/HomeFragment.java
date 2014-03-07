@@ -31,7 +31,7 @@ public class HomeFragment extends Fragment
         View v = layoutInflater.inflate(R.layout.home, viewGroup, false);
         Waterfall wf = (Waterfall) v.findViewById(R.id.waterfall);
         EditText intxt = (EditText) v.findViewById(R.id.intext);
-        TextView outtxt = (TextView) v.findViewById(R.id.outtext);
+        OutText outtxt = (OutText) v.findViewById(R.id.outtext);
         getParent().setControls(wf, outtxt, intxt);
         return v;
         }

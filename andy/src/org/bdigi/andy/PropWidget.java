@@ -81,6 +81,7 @@ class PropWidget
                         return true;                
                     }
                 });
+            }
             TextView lbl = new TextView(ctx);
             lbl.setText(p.label());
             addView(lbl);
@@ -96,25 +97,25 @@ class PropWidget
                 
                 RadioButton btn = new RadioButton(ctx);
                 btn.setText(item);
+                
+                class Listener implements View.OnClickListener {
+                    int idx;
+                    public Listener(int idx) {
+                        this.idx = idx;
+                        }
+                    public void onClick(View v) {
+                        p.value_$eq(idx);
+                    }
+                } 
+                btn.setOnClickListener(new Listener(idx));
                 grp.addView(btn);
                 }
-            
-            
-            }    
-        
-        
-        
-        
         }
-        
-    
-    
-    
-    
-    
-    
     }//RadioPropertyWidget
     
+
+
+
 }
 
 

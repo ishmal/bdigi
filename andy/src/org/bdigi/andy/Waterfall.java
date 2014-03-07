@@ -35,7 +35,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.os.Handler;
 import android.util.AttributeSet;
-
+import android.view.MotionEvent;
 import android.graphics.Color;
 import android.graphics.Paint;
 
@@ -140,10 +140,12 @@ class Waterfall extends View
         	}
 	    }
 	    
-	double freq = 1234.5;
 	double bw = 31.25;
         
     private void drawTuner(Canvas c) { 
+    
+        float freq = (float) par.getFrequency();
+        float bw = (float) par.getBandwidth();
 
         float width = getWidth();
         float height = getHeight();
@@ -250,6 +252,19 @@ class Waterfall extends View
          super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
     */
+    
+    @Override
+    public boolean onTouchEvent(MotionEvent evt) {
+        float x = evt.getX();
+        float y = evt.getY();
+        double newFreq = x2freq(x);
+        par.setFrequency(newFreq);
+        return true;
+    }
+    
+    public double x2freq(float x) {
+        return (MAX_FREQ) * x / getWidth();
+    }
     
     class Animator implements Runnable
     {

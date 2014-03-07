@@ -67,14 +67,14 @@ class RadioPropertyWidget(p: RadioProperty) extends VBox
             btn.setSelected(true)
         if (p.tooltip.size > 0)
             btn.setTooltip(new Tooltip(p.tooltip))
-    		btn.setOnAction(new EventHandler[ActionEvent]
-    			 {
-    			 val index = idx
-    			 override def handle(evt: ActionEvent)
-    				 {
-    				 p.value = index
-    				 }
-    			 })
+        btn.setOnAction(new EventHandler[ActionEvent]
+             {
+             val index = idx
+             override def handle(evt: ActionEvent)
+                 {
+                 p.value = index
+                 }
+             })
         }
     
 }
