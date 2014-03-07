@@ -9,9 +9,31 @@
         android:id="@+id/waterfall"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight=".50"
+        android:layout_weight=".35"
         >
     </org.bdigi.andy.Waterfall>
+
+    <TabHost
+        android:id="@+id/tabhost"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".15"
+        >
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"/>
+        </LinearLayout>
+    </TabHost>
+
 
     <org.bdigi.andy.OutText
         android:id="@+id/outtext"

@@ -162,7 +162,7 @@ class App
     val rttyMode   = new Rtty(this)
     val navtexMode = new Navtex(this)
     
-    val modes = List(nullMode, packetMode, pskMode, rttyMode, navtexMode)
+    val modes = Array(nullMode, packetMode, pskMode, rttyMode, navtexMode)
 	
 	private var modeVal : Mode = nullMode
 

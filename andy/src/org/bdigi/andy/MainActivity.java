@@ -233,6 +233,10 @@ public class MainApp extends App {
     public double getBandwidth() {
         return _app.bandwidth();
     }
+    
+    public org.bdigi.mode.Mode[] getModes() {
+        return _app.modes();
+    }
 		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

@@ -47,7 +47,7 @@ class PropWidget
 {
 
 
-    static public class BooleanPropertyWidget extends ToggleButton
+    static public final class BooleanPropertyWidget extends ToggleButton
     {
         public BooleanPropertyWidget(Context ctx, final BooleanProperty p) {
             super(ctx);
@@ -58,8 +58,9 @@ class PropWidget
                     public boolean onLongClick(View v) {
                         Toast.makeText(v.getContext(), p.tooltip(), Toast.LENGTH_SHORT).show();
                         return true;                
-                    }
-                });
+                        }
+                    });
+                }
             setOnCheckedChangeListener(new OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton button, boolean isChecked) {
                     p.value_$eq(isChecked);
@@ -70,7 +71,7 @@ class PropWidget
     }//BooleanPropertyWidget    
     
     
-    static public class RadioPropertyWidget extends FrameLayout
+    static public final class RadioPropertyWidget extends FrameLayout
     {
         public RadioPropertyWidget(Context ctx, final RadioProperty p) {
             super(ctx);
@@ -110,7 +111,7 @@ class PropWidget
                 btn.setOnClickListener(new Listener(idx));
                 grp.addView(btn);
                 }
-        }
+          }
     }//RadioPropertyWidget
     
 
@@ -120,46 +121,3 @@ class PropWidget
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-}
