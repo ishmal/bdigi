@@ -219,6 +219,7 @@ public class MainApp extends App {
 	    {
 		Log.e("bdigi", msg, e);
 	    }
+	    
 
 		
 	@Override
