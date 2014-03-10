@@ -101,11 +101,12 @@ class PropWidget
                 String item = items.apply(idx);
                 
                 RadioButton btn = new RadioButton(ctx);
+                grp.addView(btn);
                 btn.setText(item);
                 Integer v = (Integer)p.value();
                 android.util.Log.i("bdigiv", v.toString());
                 if (idx == v)
-                    btn.setChecked(true);
+                    btn.toggle();
                 
                 class Listener implements View.OnClickListener {
                     int idx;
@@ -117,7 +118,6 @@ class PropWidget
                     }
                 } 
                 btn.setOnClickListener(new Listener(idx));
-                grp.addView(btn);
                 }
           }
     }//RadioPropertyWidget
