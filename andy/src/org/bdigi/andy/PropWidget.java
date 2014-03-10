@@ -102,6 +102,10 @@ class PropWidget
                 
                 RadioButton btn = new RadioButton(ctx);
                 btn.setText(item);
+                Integer v = (Integer)p.value();
+                android.util.Log.i("bdigiv", v.toString());
+                if (idx == v)
+                    btn.setChecked(true);
                 
                 class Listener implements View.OnClickListener {
                     int idx;
