@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">bdigi</string>
+    <string name="cfg_title">Config</string>
     <string name="cfg_call_lbl">Callsign</string>
     <string name="cfg_call">Callsign</string>
     <string name="cfg_name_lbl">Name</string>

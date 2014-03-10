@@ -136,10 +136,10 @@ class AudioWaterfall(par: App) extends Pane
         val g = getGraphicsContext2D
         val range = maxFreq - minFreq
             
-        def freq = par.frequency
+        def freq = par.getFrequency
         def freq_=(v: Double) =
             {
-            par.frequency = v
+            par.setFrequency(v)
             }
             
         def bw = par.mode.bandwidth

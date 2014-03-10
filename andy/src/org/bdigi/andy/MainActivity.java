@@ -48,6 +48,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.LinearLayout;
@@ -56,8 +57,8 @@ import android.view.ViewGroup;
 
 import org.bdigi.*;
 
-
-
+import org.bdigi.mode.Mode;
+import scala.collection.Seq;
 
 public class MainActivity extends FragmentActivity {
 
@@ -194,7 +195,6 @@ public class MainApp extends App {
         setInputDevice("");
         setOutputDevice("");
         startProcessing();
-        mode_$eq(pskMode());
         }
 
 }
@@ -223,24 +223,30 @@ public class MainApp extends App {
 	    }
 	    
     public void setFrequency(double freq) {
-        _app.frequency_$eq(freq);
+        _app.setFrequency(freq);
     }
     
     public double getFrequency() {
-        return _app.frequency();
+        return _app.getFrequency();
     }
 		
     public double getBandwidth() {
         return _app.bandwidth();
     }
     
-    public org.bdigi.mode.Mode[] getModes() {
+    public Mode[] getModes() {
         return _app.modes();
+    }
+    
+    public void setMode(Mode m) {
+        setTitle("bdigi: " + m.name());
+        _app.setMode(m);
     }
 		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		_app = new MainApp();
 		setContentView(R.layout.activity_main);
 		waterfall = (Waterfall) findViewById (R.id.waterfall);
 		if (waterfall == null)
@@ -248,9 +254,11 @@ public class MainApp extends App {
 		viewPager = (ViewPager) findViewById (R.id.viewPager);
 		PageListener pl = new PageListener();
 		viewPager.setOnPageChangeListener(pl);
-		adapter = new MyAdapter(getSupportFragmentManager());
+		Fragment modeFrags[] = getModeFragments();
+		adapter = new MyAdapter(getSupportFragmentManager(), modeFrags);
 		viewPager.setAdapter(adapter);
-		_app = new MainApp();
+        viewPager.setCurrentItem(1);
+		setMode(_app.pskMode());
 	}
 	
 	@Override
@@ -264,10 +272,10 @@ public class MainApp extends App {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
 	        case R.id.action_home:
-	            viewPager.setCurrentItem(0);
+	            viewPager.setCurrentItem(1);
 	            return true;
 	        case R.id.action_config:
-	        	viewPager.setCurrentItem(1);
+	        	viewPager.setCurrentItem(0);
 	            return true;
 	        case R.id.action_clear:
 	        	if (outText != null)
@@ -308,27 +316,74 @@ public class MainApp extends App {
             error("page: " + position);
         }
     }
+    
+    private Fragment[] getModeFragments() {
+    
+        final Context ctx = MainActivity.this;
+        
+        Mode modes[] = getModes();   
+        Fragment frags[] = new Fragment[modes.length]; 
+        for (int i=0 ; i < modes.length ; i++) {
+            final Mode mode = modes[i];
+            Fragment frag = new Fragment() {
+            
+                @Override
+                public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
+                    LinearLayout layout = new LinearLayout(ctx);
+                    layout.setOrientation(LinearLayout.VERTICAL);
+                    TextView title = new TextView(ctx);
+                    title.setClickable(true);
+                    title.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            setMode(mode);
+                        }
+                    });
+                    title.setText("Mode: " + mode.name());
+                    title.setTextAppearance(ctx, R.style.Title);
+                    layout.addView(title);
+        
+                    Seq<Property<?>> props = mode.properties().properties();
+          
+                    for (int i=0 ; i < props.size() ; i++) {
+                        Property p = props.apply(i);
+        
+                        if (p instanceof BooleanProperty) {
+                            layout.addView(new PropWidget.BooleanPropertyWidget(ctx, (BooleanProperty)p));
+                        } else if (p instanceof RadioProperty) {
+                            layout.addView(new PropWidget.RadioPropertyWidget(ctx, (RadioProperty)p));
+                        }
+                    }
+                    return layout;
+                }
+            };
+            frags[i] = frag;
+        } 
+        return frags;    
+    }
 
 
      
 	
 	class MyAdapter extends FragmentPagerAdapter
 	{
-		public MyAdapter(FragmentManager fm) {
+	    private Fragment[] modeFragments;
+		public MyAdapter(FragmentManager fm, Fragment[] modeFragments) {
 			super(fm);
+			this.modeFragments = modeFragments;
 		}
 
 		@Override
         public int getCount() {
-            return 2;
+            return 2+modeFragments.length;
         }
 
         @Override
         public Fragment getItem(int position) {
             switch(position) {
-                case 0 : return HomeFragment.newInstance();
-                case 1 : return ConfigFragment.newInstance();
-                default : return HomeFragment.newInstance();
+                case 0  : return ConfigFragment.newInstance();
+                case 1  : return HomeFragment.newInstance();
+                default : return modeFragments[position-2];
             }
         }
 	}

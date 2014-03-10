@@ -198,7 +198,7 @@ class PrefsDialog(par: App) extends Stage
             par.setInputDevice(inp) 
             }
         par.config.audioInputDevice = inp
-        var outp            = outputDeviceList.getValue
+        var outp = outputDeviceList.getValue
         if (outp != par.config.audioOutputDevice)
             {
             par.setOutputDevice(outp) 
@@ -281,7 +281,7 @@ class MainController(stage: Stage) extends App
     def doAbout      (evt : Event) = aboutDialog.show
     def doPreferences(evt : Event) = prefsDialog.show
     def doRxTx       (evt : Event) = rxtx = evt.getSource.asInstanceOf[ToggleButton].isSelected
-    def doAgc        (evt : Event) = agc = evt.getSource.asInstanceOf[ToggleButton].isSelected
+    def doAgc        (evt : Event) = setAgc(evt.getSource.asInstanceOf[ToggleButton].isSelected)
     
     
     

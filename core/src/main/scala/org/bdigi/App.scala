@@ -25,6 +25,7 @@
 
 package org.bdigi
 
+import scala.beans.BeanProperty
 
 import org.bdigi.mode._
 
@@ -123,33 +124,25 @@ class App
         }
     
     //44100.0 / 6
+    @BeanProperty
     def sampleRate =
-        {
         7350.0
-        }
 		
     val wf = new WaterfallFactory(this, 3072,  sampleRate, Constants.highFrequency)
 
-	def frequency =
+	def getFrequency =
 	    mode.frequency
 
-    def frequency_=(f: Double) =
+    def setFrequency(f: Double) =
         mode.frequency = f
         
-    def rxtx_=(v: Boolean) =
-        {
-        transmitOrReceive = v
-        }
-    
-    def rxtx : Boolean =
-	    {
-	    transmitOrReceive
-	    }
+    @BeanProperty
+    var rxtx = false
 	
-    def agc_=(v: Boolean) =
+    def setAgc(v: Boolean) =
         mode.useAgc = v
     
-    def agc : Boolean =
+    def getAgc : Boolean =
 	    mode.useAgc
 	
     //########################################
@@ -162,17 +155,13 @@ class App
     val rttyMode   = new Rtty(this)
     val navtexMode = new Navtex(this)
     
+    @BeanProperty
     val modes = Array(nullMode, packetMode, pskMode, rttyMode, navtexMode)
 	
-	private var modeVal : Mode = nullMode
-
-    def mode : Mode = modeVal
-	
-	def mode_=(v: Mode) =
-		modeVal = v
-		
-    mode = nullMode
+	@BeanProperty
+	var mode : Mode = nullMode
     
+    @BeanProperty
     def bandwidth =
         mode.bandwidth
         
@@ -266,7 +255,6 @@ class App
     //# Startup
     //########################################
     
-    var transmitOrReceive = false
     
     class TRLoop extends Thread("digi-trloop")
     {
@@ -280,7 +268,7 @@ class App
             cont = true
             while (cont)
                 {
-                if (transmitOrReceive)
+                if (rxtx)
                     {
                     doTx(this)
                     }

@@ -30,6 +30,7 @@ import android.content.Context;
 import android.widget.Toast;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -52,6 +53,8 @@ class PropWidget
         public BooleanPropertyWidget(Context ctx, final BooleanProperty p) {
             super(ctx);
             Boolean checked = (Boolean) p.value();
+            setTextOn(p.name() + " on");
+            setTextOff(p.name() + " off");
             setChecked(checked);
             if (p.tooltip().length() > 0) {
                 setOnLongClickListener(new OnLongClickListener() {
@@ -71,10 +74,11 @@ class PropWidget
     }//BooleanPropertyWidget    
     
     
-    static public final class RadioPropertyWidget extends FrameLayout
+    static public final class RadioPropertyWidget extends LinearLayout
     {
         public RadioPropertyWidget(Context ctx, final RadioProperty p) {
             super(ctx);
+            setOrientation(LinearLayout.VERTICAL);
             if (p.tooltip().length() > 0) {
                 setOnLongClickListener(new OnLongClickListener() {
                     public boolean onLongClick(View v) {
