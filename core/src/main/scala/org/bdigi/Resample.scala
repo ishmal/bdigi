@@ -43,12 +43,34 @@ trait FirResamplerComplexOutput
  */
 class FirResampler(decimation: Int)
 {
-    private val size     = 10
+    private val size     = 3
     private val minus1   = size-1
+    
+    /**
+     * Quick and easy low pass coefficients
+     * Gave this class its own implementation for portability
+     */
+    private def lowPassCoeffs(decimation: Int, size: Int) : Array[Double] =
+        {
+        val twopi = 2.0 * math.Pi
+        val omega = twopi / decimation
+        val bottom = -0.5 * size
+        val xs = Array.tabulate(size)( idx =>
+            {
+            //FIR coefficient
+            val i = bottom + idx
+            val fir = if (i == 0)
+                omega / math.Pi 
+            else 
+                math.sin(omega * i) / (math.Pi * i)
+            //Hamming window
+            val window = 0.54 - 0.46 * math.cos(twopi * idx / (size-1))
+            fir * window
+            })
+        xs
+        }
    
-    //Note that the cutoff freq and sample rate don't matter.  Only the ratio matters.
-    private val coeffs = Fir.lowPassCoeffs(decimation * size,
-             1.0/(decimation*2), 1.0, Window.Hamming)
+    private val coeffs = lowPassCoeffs(decimation, decimation*size)
 
     private val polys = Array.tabulate(decimation, size) ( (p,i) => coeffs(i*decimation + p) )
 
@@ -84,7 +106,6 @@ class FirResampler(decimation: Int)
             isum = 0.0
             }
         }
-        
         
     /**
      * Generic decimator method
@@ -149,7 +170,8 @@ class FirResampler(decimation: Int)
         }
 
 
-}
+}//Resampler
+
 
 
  

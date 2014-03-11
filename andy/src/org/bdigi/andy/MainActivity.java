@@ -41,7 +41,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.util.Log;
@@ -242,11 +241,15 @@ public class MainApp extends App {
         setTitle("bdigi: " + m.name());
         _app.setMode(m);
     }
+    
+    public MainActivity() {
+        super();
+		_app = new MainApp();
+    }
 		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		_app = new MainApp();
 		setContentView(R.layout.activity_main);
 		waterfall = (Waterfall) findViewById (R.id.waterfall);
 		if (waterfall == null)

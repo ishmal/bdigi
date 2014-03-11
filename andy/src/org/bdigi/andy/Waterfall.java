@@ -44,7 +44,7 @@ import org.bdigi.Constants;
 class Waterfall extends View
 {
     private final double MAX_FREQ = Constants.highFrequency();
-    private final int TUNER_HEIGHT = 40;
+    private final int TUNER_HEIGHT = 20;
     private int imgWidth;
     private int imgHeight;
     private int imgSize;
