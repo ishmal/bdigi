@@ -49,7 +49,7 @@
             <Separator orientation="VERTICAL" prefHeight="21.0" />
             <Button id="" mnemonicParsing="false" onAction="#doClear" styleClass="toolBtn" text="Clear" />
             <Separator orientation="VERTICAL" prefHeight="21.0" />
-            <ToggleButton id="" mnemonicParsing="false" onAction="#doAgc" prefWidth="33.999908447265625" styleClass="toolBtn" text="AGC" />
+            <ToggleButton id="" mnemonicParsing="false" onAction="#doAgc" prefWidth="-1.0" styleClass="toolBtn" text="AGC" />
             <Separator orientation="VERTICAL" prefHeight="21.0" />
             <ToggleButton id="" mnemonicParsing="false" onAction="#doAfc" styleClass="toolBtn" text="AFC" />
           </items>
