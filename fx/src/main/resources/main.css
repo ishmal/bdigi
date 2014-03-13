@@ -4,3 +4,7 @@
     -fx-border-color: #dddddd;
     -fx-border-width: 1px;
 }
+
+.toolBtn {
+    -fx-font: 9px "Sans";
+}

@@ -145,6 +145,12 @@ class App
     def getAgc : Boolean =
 	    mode.useAgc
 	
+    def setAfc(v: Boolean) =
+        mode.useAfc = v
+    
+    def getAfc : Boolean =
+	    mode.useAfc
+	
     //########################################
     //# Modes
     //########################################

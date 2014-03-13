@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
   <children>
     <VBox prefHeight="368.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
@@ -19,7 +19,7 @@
             </Menu>
             <Menu mnemonicParsing="false" text="Edit">
               <items>
-                <MenuItem id="" fx:id="clearItem" mnemonicParsing="false" onAction="#doClear" text="Clear" />
+                <MenuItem id="" mnemonicParsing="false" onAction="#doClear" text="Clear" fx:id="clearItem" />
                 <MenuItem mnemonicParsing="false" onAction="#doPreferences" text="Preferences..." />
               </items>
             </Menu>
@@ -45,11 +45,13 @@
         <VBox fx:id="inputTextBox" prefHeight="80.0" prefWidth="600.0" />
         <ToolBar prefHeight="32.0" prefWidth="600.0">
           <items>
-            <ToggleButton id="rxtxBtn" mnemonicParsing="false" onAction="#doRxTx" text="TX" />
+            <ToggleButton id="" mnemonicParsing="false" onAction="#doRxTx" styleClass="toolBtn" text="TX" />
             <Separator orientation="VERTICAL" prefHeight="21.0" />
-            <Button id="clearBtn" mnemonicParsing="false" onAction="#doClear" text="Clear" />
+            <Button id="" mnemonicParsing="false" onAction="#doClear" styleClass="toolBtn" text="Clear" />
             <Separator orientation="VERTICAL" prefHeight="21.0" />
-            <ToggleButton id="rxtxBtn" mnemonicParsing="false" onAction="#doAgc" text="AGC" />
+            <ToggleButton id="" mnemonicParsing="false" onAction="#doAgc" prefWidth="33.999908447265625" styleClass="toolBtn" text="AGC" />
+            <Separator orientation="VERTICAL" prefHeight="21.0" />
+            <ToggleButton id="" mnemonicParsing="false" onAction="#doAfc" styleClass="toolBtn" text="AFC" />
           </items>
         </ToolBar>
       </children>

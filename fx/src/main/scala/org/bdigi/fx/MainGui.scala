@@ -282,6 +282,7 @@ class MainController(stage: Stage) extends App
     def doPreferences(evt : Event) = prefsDialog.show
     def doRxTx       (evt : Event) = rxtx = evt.getSource.asInstanceOf[ToggleButton].isSelected
     def doAgc        (evt : Event) = setAgc(evt.getSource.asInstanceOf[ToggleButton].isSelected)
+    def doAfc        (evt : Event) = setAfc(evt.getSource.asInstanceOf[ToggleButton].isSelected)
     
     
     

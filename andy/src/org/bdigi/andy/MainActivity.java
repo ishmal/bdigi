@@ -50,6 +50,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 import android.widget.LinearLayout;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -206,6 +207,23 @@ public class MainApp extends App {
 	private OutText  outText;
 	private MainApp _app;
 
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		waterfall = (Waterfall) findViewById (R.id.waterfall);
+		if (waterfall == null)
+		    error("problem with the waterfall");
+		viewPager = (ViewPager) findViewById (R.id.viewPager);
+		PageListener pl = new PageListener();
+		viewPager.setOnPageChangeListener(pl);
+		Fragment modeFrags[] = getModeFragments();
+		adapter = new MyAdapter(getSupportFragmentManager(), modeFrags);
+		viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(1);
+		setMode(_app.pskMode());
+	}
+	
     public void trace(String msg)
         {
         Log.i("bdigi", msg);
@@ -246,24 +264,30 @@ public class MainApp extends App {
         super();
 		_app = new MainApp();
     }
+    
+    public void onRxTxClicked(View v) {
+        ToggleButton btn = (ToggleButton) v;
+        _app.setRxtx(btn.isChecked());
+    }
 		
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		waterfall = (Waterfall) findViewById (R.id.waterfall);
-		if (waterfall == null)
-		    error("problem with the waterfall");
-		viewPager = (ViewPager) findViewById (R.id.viewPager);
-		PageListener pl = new PageListener();
-		viewPager.setOnPageChangeListener(pl);
-		Fragment modeFrags[] = getModeFragments();
-		adapter = new MyAdapter(getSupportFragmentManager(), modeFrags);
-		viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(1);
-		setMode(_app.pskMode());
-	}
-	
+    public void onClearClicked(View v) {
+        if (inText != null)
+            inText.clear();
+        if (outText != null)
+            outText.clear();
+    }
+		
+    public void onAgcClicked(View v) {
+        ToggleButton btn = (ToggleButton) v;
+        _app.setAgc(btn.isChecked());
+    }
+		
+    public void onAfcClicked(View v) {
+        ToggleButton btn = (ToggleButton) v;
+        _app.setAfc(btn.isChecked());
+    }
+		
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

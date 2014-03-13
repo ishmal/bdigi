@@ -53,6 +53,40 @@
         >
     </org.bdigi.andy.InText>
     
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".10"
+        >
+        <ToggleButton 
+            android:id="@+id/rxtxbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textOn="Tx"
+            android:textOff="Rx"
+            android:onClick="onRxTxClicked"/>
+        <Button 
+            android:id="@+id/clearbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clear"
+            android:onClick="onClearClicked"/>
+        <ToggleButton 
+            android:id="@+id/agcbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textOn="Agc"
+            android:textOff="Agc"
+            android:onClick="onAgcClicked"/>
+        <ToggleButton 
+            android:id="@+id/afcbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textOn="Afc"
+            android:textOff="Afc"
+            android:onClick="onAfcClicked"/>
+    </LinearLayout>
 
 </LinearLayout>
 
