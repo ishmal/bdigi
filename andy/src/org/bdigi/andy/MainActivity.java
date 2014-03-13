@@ -63,141 +63,141 @@ import scala.collection.Seq;
 public class MainActivity extends FragmentActivity {
 
 
-public class MainApp extends App {
+    public class MainApp extends App {
 
-    //########################################
-    //# Logging
-    //########################################
+        //########################################
+        //# Logging
+        //########################################
     
-    @Override
-    public void trace(String msg)
-        {
-        MainActivity.this.trace(msg);
-        }
+        @Override
+        public void trace(String msg)
+            {
+            MainActivity.this.trace(msg);
+            }
 
-    @Override
-    public void error(String msg)
-        {
-        MainActivity.this.error(msg);
-        }
+        @Override
+        public void error(String msg)
+            {
+            MainActivity.this.error(msg);
+            }
 
-    @Override
-	public void error(String msg, Throwable e) 
-	    {
-		MainActivity.this.error(msg, e);
-	    }
-	
-
-    //########################################
-    //# Audio I/O
-    //########################################
+        @Override
+        public void error(String msg, Throwable e) 
+            {
+            MainActivity.this.error(msg, e);
+            }
     
-    @Override
-    public void setInputDevice(String deviceName)
-        {
-        AudioInputDevice input = (AudioInputDevice)new org.bdigi.andy.AudioInput(this);
-        input.open();
-        inputDevice_$eq(scala.Option.apply(input));
-        }
+
+        //########################################
+        //# Audio I/O
+        //########################################
     
-    @Override
-    public void setOutputDevice(String deviceName)
-        {
-        AudioOutputDevice output = (AudioOutputDevice)new org.bdigi.andy.AudioOutput(this);
-        output.open();
-        outputDevice_$eq(scala.Option.apply(output));
-        }
+        @Override
+        public void setInputDevice(String deviceName)
+            {
+            AudioInputDevice input = (AudioInputDevice)new org.bdigi.andy.AudioInput(this);
+            input.open();
+            inputDevice_$eq(scala.Option.apply(input));
+            }
+    
+        @Override
+        public void setOutputDevice(String deviceName)
+            {
+            AudioOutputDevice output = (AudioOutputDevice)new org.bdigi.andy.AudioOutput(this);
+            output.open();
+            outputDevice_$eq(scala.Option.apply(output));
+            }
     
   
     
-    //########################################
-    //# Config
-    //########################################
-    @Override
-    public boolean configLoad()
-        {
-        try
+        //########################################
+        //# Config
+        //########################################
+        @Override
+        public boolean configLoad()
             {
-            FileInputStream ins = openFileInput("bdigi.ini");
-            config().load(ins);
-            ins.close();
-			return true;
+            try
+                {
+                FileInputStream ins = openFileInput("bdigi.ini");
+                config().load(ins);
+                ins.close();
+                return true;
+                }
+            catch (Exception e)
+                {
+                error("configLoad failed: " + e);
+                return false;
+                }
             }
-        catch (Exception e)
+
+        @Override
+        public boolean configSave()
             {
-            error("configLoad failed: " + e);
-            return false;
+            try
+                {
+                FileOutputStream outs = openFileOutput("bdigi.ini", Context.MODE_PRIVATE);
+                config().save(outs);
+                outs.close();
+                return true;
+                }
+            catch (Exception e)
+                {
+                error("configSave failed: " + e);
+                return false;
+                }
             }
-        }
 
-    @Override
-    public boolean configSave()
-        {
-        try
+
+        /**
+         * Override these in your client code, especially for a GUI
+         */
+
+        @Override
+        public void status(String msg)
             {
-            FileOutputStream outs = openFileOutput("bdigi.ini", Context.MODE_PRIVATE);
-            config().save(outs);
-            outs.close();
-            return true;
             }
-        catch (Exception e)
-            {
-            error("configSave failed: " + e);
-            return false;
-            }
-        }
-
-
-    /**
-     * Override these in your client code, especially for a GUI
-     */
-
-    @Override
-    public void status(String msg)
-        {
-        }
     
-    @Override
-    public void puttext(String msg)
-        {
-        if (outText != null)
-            outText.puttext(msg);
-        }
+        @Override
+        public void puttext(String msg)
+            {
+            if (outText != null)
+                outText.puttext(msg);
+            }
     
-    @Override
-    public String gettext()
-        {
-        return "";
-        }
+        @Override
+        public String gettext()
+            {
+            return "";
+            }
         
-    @Override
-    public void updateScope(double x, double y)
-        {
-        }
+        @Override
+        public void updateScope(double x, double y)
+            {
+            }
 
-    @Override
-    public void updateSpectrum(int ps[])
-        {
-        if (waterfall != null)
-            waterfall.update(ps);
-        else
-            trace("no waterfall");
-        }
+        @Override
+        public void updateSpectrum(int ps[])
+            {
+            if (waterfall != null)
+                waterfall.update(ps);
+            else
+                trace("no waterfall");
+            }
     
-    @Override
-    public void adjust()
-        {
-        }
+        @Override
+        public void adjust()
+            {
+            }
         
-    public MainApp()
-        {
-        super();
-        setInputDevice("");
-        setOutputDevice("");
-        startProcessing();
-        }
+        public MainApp()
+            {
+            super();
+            setInputDevice("");
+            setOutputDevice("");
+            startProcessing();
+            }
 
-}
+    }//MainApp
 
 	
 	private ViewPager viewPager;
@@ -206,6 +206,11 @@ public class MainApp extends App {
 	private InText  inText;
 	private OutText  outText;
 	private MainApp _app;
+
+    public MainActivity() {
+        super();
+		_app = new MainApp();
+    }
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -224,6 +229,10 @@ public class MainApp extends App {
 		setMode(_app.pskMode());
 	}
 	
+    //##################################################
+    //# Messages
+    //##################################################
+    
     public void trace(String msg)
         {
         Log.i("bdigi", msg);
@@ -239,6 +248,10 @@ public class MainApp extends App {
 		Log.e("bdigi", msg, e);
 	    }
 	    
+    //##################################################
+    //# Bind to App
+    //##################################################
+    
     public void setFrequency(double freq) {
         _app.setFrequency(freq);
     }
@@ -260,10 +273,9 @@ public class MainApp extends App {
         _app.setMode(m);
     }
     
-    public MainActivity() {
-        super();
-		_app = new MainApp();
-    }
+    //##################################################
+    //# Button Callbacks
+    //##################################################
     
     public void onRxTxClicked(View v) {
         ToggleButton btn = (ToggleButton) v;
@@ -287,6 +299,10 @@ public class MainApp extends App {
         _app.setAfc(btn.isChecked());
     }
 		
+
+    //##################################################
+    //# Menu
+    //##################################################
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
