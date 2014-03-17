@@ -56,9 +56,8 @@ class Mfsk(par: App) extends Mode(par, 250.0)
         adjust
         }
         
-    override def rate_=(v: Double) =
+    override def rateChanged(v: Double) =
         {
-        super.rate = v
         adjust
         }
     

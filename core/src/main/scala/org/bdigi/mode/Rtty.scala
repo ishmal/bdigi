@@ -165,11 +165,8 @@ class Rtty(par: App) extends Mode(par, 1000.0)
         adjust
         }
         
-    override def rate_=(v: Double) =
-        {
-        super.rate = v
+    override def rateChanged(v: Double) =
         adjust
-        }
     
     override def bandwidth =
         shift

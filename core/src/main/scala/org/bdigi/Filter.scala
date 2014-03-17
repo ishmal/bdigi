@@ -117,6 +117,38 @@ object Window
                  0.08 * math.cos(4.0 * math.Pi * i / (size-1))
                  )
         }
+        
+        
+    def genKaiser(size: Int, i: Int) : Double =
+        {
+        def bessel(x: Double) : Double =
+            {
+            val t = x / 3.7500000
+            if ( x < 3.75000)  
+                {
+	            val t2 =  t * t
+                var b  = t2 * ( 0.2659732 + t2 * ( 0.0360768 + 0.0045813 * t2))
+                b  = t2 * ( 3.0899424 + t2 * ( 1.2067492 + b))
+                b  = 1.00000 + t2 * ( 3.5156229 + b)
+                b
+	            }
+	        else
+	           {
+               val tm = 1.0000 / t
+               var b  = tm * (  0.02635537 + tm * (-0.01647633 + 0.00392337 * tm))
+               b  = tm * ( -0.00157565 + tm * ( 0.00916281 + tm * ( -0.02057706 + b)))
+               b = 0.39894228 + tm * ( 0.01328592 + tm * ( 0.00225319 + b))
+               b = b / (math.exp( -x ) * math.sqrt(x))
+               b
+	           }
+            }
+            
+        val alpha = 3.5
+        val denom = bessel(math.Pi * alpha)
+        val half = size / 2
+        val ak = if (i<half) i.toDouble / half else (size-i).toDouble / half 
+        bessel(math.Pi * alpha * math.sqrt(1.0 - ak*ak)) / denom
+        }
 }
 
 

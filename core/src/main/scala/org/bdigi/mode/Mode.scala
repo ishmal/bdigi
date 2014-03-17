@@ -69,6 +69,7 @@ class Mode(var par: App, val sampleRateHint: Double)
 
 
     protected var frequencyVal = 0.0
+    
     def frequency =
         frequencyVal
         
@@ -140,10 +141,8 @@ class Mode(var par: App, val sampleRateHint: Double)
     //#######################################    
     private var rateInHertz = 100.0
     
+    def rate = rateInHertz
     
-    def rate : Double = rateInHertz
-    
-
     /**
      * This is the data rate of the Mode.  This can be overridden
      * by an implementation for any specific processing.  This is
@@ -152,14 +151,21 @@ class Mode(var par: App, val sampleRateHint: Double)
     def rate_=(newrate: Double) =
         {
         rateInHertz = newrate
+        rateChanged(newrate)
         }
+        
+    /**
+     * Override this when you need to readjust things after a change
+     */
+    def rateChanged(v: Double) =
+        {}
 
     /**
      * This is used for modulation and demodulation, and timing
      * and decoding.  Make sure sampleRate > rate!!
      */              
     def samplesPerSymbol =
-        sampleRate / rate
+        sampleRate / rateInHertz
         
         
  

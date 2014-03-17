@@ -229,7 +229,7 @@ object Varicode
 class EarlyLate(samplesPerSymbol: Double)
 {
     val size    = samplesPerSymbol.toInt
-    val half    = size / 2
+    val half    = size >> 1
     val buf     = Array.fill(size)(0.0)
     var bitclk  = 0.0
 
@@ -321,7 +321,7 @@ object MaximumLikelihood
 
 
 
-class Psk31(par: App) extends Mode(par, 600.0)
+class Psk31(par: App) extends Mode(par, 1200.0)
 {
     //####################################################
     //# S E T T I N G S
@@ -366,9 +366,8 @@ class Psk31(par: App) extends Mode(par, 600.0)
     
     var useCostas = false
     
-    override def rate_=(v: Double) =
+    override def rateChanged(v: Double) =
         {
-        super.rate = v
         phaseTransitions = makeTransitions
         dataFilter = mkDataFilter
         bpf        = mkBpf
@@ -391,19 +390,6 @@ class Psk31(par: App) extends Mode(par, 600.0)
         }
     
     
-    /*
-    var lastx = Complex(0.0)
- 
-    def update(sample: Complex) : Unit =
-        {
-        val x = sample
-        val z = x * lastx
-        lastx = x
-        par.updateScope(z * 6.0)
-        timer.update(z)(processSymbol)
-        }
-    */
-
     //####################################################
     //# D E C O D E    
     //####################################################

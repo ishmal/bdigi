@@ -179,24 +179,25 @@ class FirResampler(decimation: Int)
  */
 class Resampler6
 {
-    private val c00 =  1.0395124886718336E-18
-    private val c01 =  1.0618775124613944E-17
-    private val c02 =  8.652446849771314E-18
-    private val c10 =  0.003827007298326752
-    private val c11 =  0.12833556742764804
-    private val c12 = -0.03428966321041717
-    private val c20 =  0.007878328379302304
-    private val c21 =  0.2735053406178378
-    private val c22 = -0.018467332327256183
-    private val c30 = -4.3524434203537546E-18
-    private val c31 =  0.3307225419515316
-    private val c32 = -2.5995075560632145E-18
-    private val c40 = -0.02743173056833376
-    private val c41 =  0.2566711348552961
-    private val c42 =  0.004373722626659141
-    private val c50 = -0.04589020349794127
-    private val c51 =  0.1126381380499992
-    private val c52 =  0.0027566444771089625
+    
+    private val c00= -0.00282942
+    private val c01= -0.00382701
+    private val c02= -0.00454856
+    private val c03= 2.17622e-18
+    private val c04= 0.0158377
+    private val c05= 0.0458902
+    private val c06= 0.0867089
+    private val c07= 0.128336
+    private val c08= 0.157908
+    private val c09= 0.165361
+    private val c10= 0.148189
+    private val c11= 0.112638
+    private val c12= 0.0706526
+    private val c13= 0.0342897
+    private val c14= 0.0106621
+    private val c15= 1.29975e-18
+    private val c16= -0.00252517
+    private val c17= -0.00275664
 
     trait Phase
     {
@@ -211,27 +212,27 @@ class Resampler6
 
     private val dec0 = new Phase {
         def apply(v: Double)(f: Double => Unit) =        
-            sum = d0 * c00 + d1 * c01 + d2 * c02
+            sum = d0 * c00 + d1 * c06 + d2 * c12
     }
     private val dec1 = new Phase {
         def apply(v: Double)(f: Double => Unit) =
-            sum += d0 * c10 + d1 * c11 + d2 * c12
+            sum += d0 * c01 + d1 * c07 + d2 * c13
     }
     private val dec2 = new Phase {
         def apply(v: Double)(f: Double => Unit) =
-            sum += d0 * c20 + d1 * c21 + d2 * c22
+            sum += d0 * c02 + d1 * c08 + d2 * c14
     }
     private val dec3 = new Phase {
         def apply(v: Double)(f: Double => Unit) =
-            sum += d0 * c30 + d1 * c31 + d2 * c32
+            sum += d0 * c03 + d1 * c09 + d2 * c15
     }
     private val dec4 = new Phase {
         def apply(v: Double)(f: Double => Unit) =
-            sum += d0 * c40 + d1 * c41 + d2 * c42
+            sum += d0 * c04 + d1 * c10 + d2 * c16
     }
     private val dec5 = new Phase {
         def apply(v: Double)(f: Double => Unit) =
-            { sum += d0 * c50 + d1 * c51 + d2 * c52 ; f(sum) }
+            f(d0 * c05 + d1 * c11 + d2 * c17)
     }
 
     dec0.next = dec1
@@ -246,7 +247,7 @@ class Resampler6
 
     def decimate(v: Double)(f: Double => Unit) =
     {
-        d2 = d1 ; d1 = d0 ; d0 = v
+        d0 = d1 ; d1 = d2 ; d2 = v
         dec(v)(f)
         dec = dec.next
     }
@@ -254,13 +255,13 @@ class Resampler6
 
     def interpolate(v: Double)(f: Double => Unit) =
     {
-        d2 = d1 ; d1 = d0 ; d0 = v
-        f(d0 * c00 + d1 * c01 + d2 * c02)
-        f(d0 * c10 + d1 * c11 + d2 * c12)
-        f(d0 * c20 + d1 * c21 + d2 * c22)
-        f(d0 * c30 + d1 * c31 + d2 * c32)
-        f(d0 * c40 + d1 * c41 + d2 * c42)
-        f(d0 * c50 + d1 * c51 + d2 * c52)
+        d0 = d1 ; d1 = d2 ; d2 = v
+        f(d0 * c00 + d1 * c06 + d2 * c12)
+        f(d0 * c01 + d1 * c07 + d2 * c13)
+        f(d0 * c02 + d1 * c08 + d2 * c14)
+        f(d0 * c03 + d1 * c09 + d2 * c15)
+        f(d0 * c04 + d1 * c10 + d2 * c16)
+        f(d0 * c05 + d1 * c11 + d2 * c17)
     }
 
 

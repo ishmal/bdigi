@@ -353,11 +353,11 @@ class PacketMode(par: App) extends Mode(par, 4800.0)
     def shift_=(v: Double) =
         {
         shiftVal = v
+        adjust
         }
     
-    override def rate_=(v: Double) =
+    override def rateChanged(v: Double) =
         {
-        super.rate = v
         adjust
         }
 
