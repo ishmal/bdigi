@@ -28,12 +28,38 @@ package org.bdigi
 
 /**
  * A sine generator with a 32-bit accumulator and a 16-bit
- * lookup table.  Much faster than above.
+ * lookup table.  Much faster than previous.
  */
 class Nco(frequency: Double, sampleRate: Double)
 {
     val freq  = (4294967296.0 * frequency / sampleRate).toLong
     var phase = 0L
+    
+    def next : Complex =
+        {
+        phase += freq
+        Nco.table((phase >> 16).toInt & 0xffff)
+        }
+        
+}
+
+
+/**
+ * Same as above, but with an frequency range that can be adjusted by an error setting
+ * from -1.0 to 1.0 within its frequency range.
+ */
+class AdjustableNco(frequency: Double, maxErrInHz: Double, sampleRate: Double)
+{
+    var freq  = (4294967296.0 * frequency / sampleRate).toLong
+    var phase = 0L
+    
+    /**
+     * @param v a number from -1.0 to 1.0
+     */
+    def error(v: Double) =
+        {
+        freq  = (4294967296.0 * (frequency + v * maxErrInHz) / sampleRate).toLong
+        }
     
     def next : Complex =
         {

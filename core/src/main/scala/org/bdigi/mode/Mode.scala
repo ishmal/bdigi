@@ -77,11 +77,11 @@ class Mode(var par: App, val sampleRateHint: Double)
     def frequency_=(v: Double) =
        {
        frequencyVal = v
-       nco = new Nco(v, par.sampleRate)
+       nco = new AdjustableNco(v, 20.0, par.sampleRate)
        //trace("freq:" + v + "  fs:"+par.sampleRate)
        }
         
-    protected var nco = new Nco(frequency, par.sampleRate)
+    protected var nco = new AdjustableNco(frequency, 20.0, par.sampleRate)
 
     val twopi = 2.0 * math.Pi
         
