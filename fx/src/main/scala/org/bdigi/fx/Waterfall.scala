@@ -122,7 +122,7 @@ class AudioWaterfall(par: App) extends Pane
             g2d.drawImage(img, 0.0, 0.0, width, height)
             }
 
-        def update(ps: Array[Int]) =
+        def updateSpectrum(ps: Array[Int]) =
             {
             psbuf = ps.clone
             }
@@ -343,7 +343,7 @@ class AudioWaterfall(par: App) extends Pane
        .play();
 
     def update(ps: Array[Int]) =
-        wf.update(ps)
+        wf.updateSpectrum(ps)
 
     def updateScope(x: Double, y: Double) =
         scope.update(x, y)

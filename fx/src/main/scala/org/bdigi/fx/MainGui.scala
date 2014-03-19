@@ -241,8 +241,8 @@ class PrefsDialog(par: App) extends Stage
 class MainController(stage: Stage) extends App
 {
     
-    @FXML var waterfallBox : AnchorPane = _
-    val audioWaterfall = new AudioWaterfall(this)
+    @FXML var tuningPanelBox : AnchorPane = _
+    val tuningPanel = new TuningPanel(this)
     
     @FXML var modePane : TabPane = _
     
@@ -291,7 +291,8 @@ class MainController(stage: Stage) extends App
      */
     @FXML def initialize =
         {
-        waterfallBox.getChildren.add(audioWaterfall)
+        tuningPanelBox.getChildren.add(tuningPanel)
+        tuningPanel.setManaged(true)
         consoleTextBox.getChildren.add(consoleText)
         inputTextBox.getChildren.add(inputText)  
         
@@ -351,8 +352,8 @@ class MainController(stage: Stage) extends App
 
     override def updateSpectrum(ps:  Array[Int]) =
         {
-        if (audioWaterfall != null)
-            audioWaterfall.update(ps)
+        if (tuningPanel != null)
+            tuningPanel.update(ps)
         }
     
     override def adjust =
@@ -362,8 +363,8 @@ class MainController(stage: Stage) extends App
 
     override def updateScope(x: Double, y: Double) =
         {
-        if (audioWaterfall != null)
-            audioWaterfall.updateScope(x, y)
+        if (tuningPanel != null)
+            tuningPanel.updateScope(x, y)
         }
 
     startProcessing        

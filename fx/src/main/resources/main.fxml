@@ -35,7 +35,7 @@
             </Menu>
           </menus>
         </MenuBar>
-        <AnchorPane id="" fx:id="waterfallBox" prefHeight="121.0" prefWidth="600.0">
+        <AnchorPane id="" fx:id="tuningPanelBox" prefHeight="99.0" prefWidth="600.0">
           <VBox.margin>
             <Insets />
           </VBox.margin>
