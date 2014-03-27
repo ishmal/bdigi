@@ -168,9 +168,9 @@ function DigiTest(anchorName) {
         function process() {
             var data = new Uint8Array(analyser.frequencyBinCount);
             analyser.getByteFrequencyData(data);
-            //trace("process:" + data.length);
+            trace("process:" + data.length);
             waterfall.update(data);
-            //requestAnimationFrame(process);
+            requestAnimationFrame(process);
         }
         
         function startStream(stream) {
@@ -225,33 +225,6 @@ $(document).ready(function() {
 
 
 <div id="digi"></div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

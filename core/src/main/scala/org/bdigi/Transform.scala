@@ -54,10 +54,15 @@ class SimpleGoertzel(frequency: Double, Fs: Double, N: Int)
     private val wr      = math.cos(w)
     private val wr2     = 2.0 * wr
     private val wi      = math.sin(w)
-    private val damping = 0.997
 
     private var prev    = 0.0
     private var prev2   = 0.0
+    
+    def clear =
+        {
+        prev = 0.0
+        prev2 = 0.0
+        }
 
     def X = Complex(wr * prev - prev2,  wi * prev)
 
@@ -102,8 +107,8 @@ class ComplexGoertzel(frequency: Double, Fs: Double, N: Int)
         val r = point.r + (pr1 * wr2 - pr2)
         pr2 = pr1 - point.r
         pr1  = r * damping
-        val i = point.r + (pi1 * wr2 - pi2)
-        pi2 = pi1 - point.r
+        val i = point.i + (pi1 * wr2 - pi2)
+        pi2 = pi1 - point.i
         pi1  = i * damping
         }
 

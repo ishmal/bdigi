@@ -318,23 +318,40 @@ object MaximumLikelihood
 }
 
 
-class Tracker
-{
-
-    
-
-
-    def update(v: Complex)(f: (Complex) => Unit) =
-       {
-       
-       f(v)
-       }
-}
-
 
 
 class Psk31(par: App) extends Mode(par, 1200.0)
 {
+    class Afc(bandwidth: Double, Fs:  Double)
+    {
+        val N = 256
+        val lo = new SimpleGoertzel(-bandwidth * 0.5, Fs, N)
+        val hi = new SimpleGoertzel( bandwidth * 0.5, Fs, N)    
+        var counter = 0
+
+        def update(v: Complex)
+           {
+           val mag = v.mag
+           lo.update(mag)
+           hi.update(mag)
+           counter += 1
+           if (counter >= N)
+               {
+               counter = 0
+               val lowpwr = lo.mag
+               val hipwr = hi.mag
+               //trace("lo:" + lowpwr + "  hi:" + hipwr)
+               if (lowpwr > hipwr)
+                    trace("<")
+                else 
+                    trace(">")
+               lo.clear
+               hi.clear
+               }
+           }
+    }
+
+
     //####################################################
     //# S E T T I N G S
     //####################################################
@@ -375,7 +392,7 @@ class Psk31(par: App) extends Mode(par, 1200.0)
     var bpf        = mkBpf
     var timer      = mkTimer
     
-    var useCostas = false
+    val afc = new Afc(31.0, sampleRate)
     
     override def rateChanged(v: Double) =
         {
@@ -397,6 +414,8 @@ class Psk31(par: App) extends Mode(par, 1200.0)
         par.updateScope(z.r, z.i)
         //var zscope = z * 2.0;
         timer.update(z)(processSymbol)
+        if (useAfc)
+            afc.update(z)
         z.r
         }
     
