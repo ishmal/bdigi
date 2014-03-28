@@ -289,24 +289,10 @@ class App
     
     //val decimator    = new FirResampler(6)
     //val interpolator = new FirResampler(6)
+    val decimator    = new Resampler6
+    val interpolator = new Resampler6
     val txbuf = Array.ofDim[Double](512)
     var txptr = 0
-    val decimator = Resampler(6)(v =>
-        {
-        wf.update(v)(ps => updateSpectrum(ps))
-        mode.receive(v)
-        })
-    val interpolator = Resampler(6)(v =>
-        {
-        txbuf(txptr) = v
-        txptr += 1
-        if (txptr >= txbuf.size)
-            {
-            //trace("data:" + txbuf)
-            outputDevice.get.write(txbuf)
-            txptr = 0
-            }
-        })
 
     def doRx(loop: TRLoop) =
         {
@@ -322,7 +308,13 @@ class App
                 {
                 //trace("ok")
                 for (v <- res.get)
-                    decimator.decimate(v)
+                    {
+                    decimator.decimate(v)(iv =>
+                        {
+                        wf.update(iv)(ps => updateSpectrum(ps))
+                        mode.receive(iv)
+                        })
+                    }
                 }
             }
         }
@@ -333,7 +325,19 @@ class App
         def upAndOut(buf: Array[Double]) =
             {
             for (v <- buf)
-                interpolator.interpolate(v)
+                {
+                interpolator.interpolate(v)( iv=>
+                    {
+                    txbuf(txptr) = iv
+                    txptr += 1
+                    if (txptr >= txbuf.size)
+                        {
+                        //trace("data:" + txbuf)
+                        outputDevice.get.write(txbuf)
+                        txptr = 0
+                        }
+                    })
+                }
             }
         val preamble = mode.getTransmitBeginData
         if (preamble.isDefined)
