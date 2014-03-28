@@ -289,8 +289,8 @@ class App
     
     //val decimator    = new FirResampler(6)
     //val interpolator = new FirResampler(6)
-    val decimator    = new Resampler6
-    val interpolator = new Resampler6
+    val decimator    = Resampler(6)
+    val interpolator = Resampler(6)
     val txbuf = Array.ofDim[Double](512)
     var txptr = 0
 
