@@ -406,6 +406,12 @@ object Resampler
     }
 
 
+    class Resampler1 extends Resampler(1)
+    {
+        def decimate(v: Double)(f: Double => Unit) = f(v)
+        def interpolate(v: Double)(f: Double => Unit) = f(v)
+    }//Resampler1
+        
     class Resampler2 extends Resampler(2)
     {
         def decimate(v: Double)(f: Double => Unit) =
@@ -741,28 +747,34 @@ object ResamplerX
     private val c0719 = -0.000571381
     private val c0720 = -0.00000
 
-  abstract class Resampler(val decimation: Int)
-  {
-      var d0 = Complex(0.0)
-      var d1 = Complex(0.0)
-      var d2 = Complex(0.0)
-      var d3 = Complex(0.0)
-      var d4 = Complex(0.0)
-      var d5 = Complex(0.0)
-      var d6 = Complex(0.0)
-      var d7 = Complex(0.0)
-      var d8 = Complex(0.0)
-      var d9 = Complex(0.0)
-  
-      var idx = 0
-      val buf = Array.fill(decimation)(Complex(0.0))
-  
-      def decimate(v: Complex)(f: (Complex) => Unit) : Unit
-      
-      def interpolate(v: Complex)(f: (Complex) => Unit) : Unit
-  }
+    abstract class Resampler(val decimation: Int)
+    {
+        var d0 = Complex(0.0)
+        var d1 = Complex(0.0)
+        var d2 = Complex(0.0)
+        var d3 = Complex(0.0)
+        var d4 = Complex(0.0)
+        var d5 = Complex(0.0)
+        var d6 = Complex(0.0)
+        var d7 = Complex(0.0)
+        var d8 = Complex(0.0)
+        var d9 = Complex(0.0)
+    
+        var idx = 0
+        val buf = Array.fill(decimation)(Complex(0.0))
+    
+        def decimate(v: Complex)(f: (Complex) => Unit) : Unit
+        
+        def interpolate(v: Complex)(f: (Complex) => Unit) : Unit
+    }
 
-    class Resampler2 extends Resampler(2)
+    class Resampler1 extends Resampler(1)
+    {
+        def decimate(v: Complex)(f: Complex => Unit) = f(v)
+        def interpolate(v: Complex)(f: Complex => Unit) = f(v)
+    }//Resampler1
+        
+     class Resampler2 extends Resampler(2)
     {
         def decimate(v: Complex)(f: Complex => Unit) =
         {
@@ -974,6 +986,7 @@ object ResamplerX
         {
         decimation match
             {
+            case 1 => new Resampler1
             case 2 => new Resampler2
             case 3 => new Resampler3
             case 4 => new Resampler4
