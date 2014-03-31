@@ -136,16 +136,16 @@ function Resampler(decimation) {
             d1 = d3;
             d2 = buf[0];
             d3 = buf[1];
-            var sum = d0 * c0200 + d1 * c0202 + d2 * c0204 +
-                      d1 * c0201 + d2 * c0203 + d3 * c0205;
+            var sum = /*d0 * c0200 +*/ d1 * c0202 + d2 * c0204 +
+                      d1 * c0201 + d2 * c0203/* + d3 * c0205*/;
             f(sum);
             }
     }
 
     function interpolate2(v, f) {
         d0 = d1; d1 = d2; d2 = v;
-        f(d0 * c0200 + d1 * c0202 + d2 * c0204);
-        f(d0 * c0201 + d1 * c0203 + d2 * c0205);
+        f(/*d0 * c0200 + */d1 * c0202 + d2 * c0204);
+        f(d0 * c0201 + d1 * c0203/* + d2 * c0205*/);
     }
 
     function decimate3(v, f) {

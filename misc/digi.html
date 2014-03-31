@@ -164,6 +164,24 @@ function DigiTest(anchorName) {
     function AudioInput() {
     
         var analyser = null;
+        var source = null;
+        var isRunning = false;
+        
+        function start() {
+            source.buffer = audioBuffer;
+            source.loop = true;
+            source.noteOn(0.0);
+            isRunning = true; 
+        }
+        
+        
+        function stop() {
+            if (source) {
+                source.noteOff(0);
+                source.disconnect();
+            }
+            isRunning = false;
+        }
         
         function process() {
             var data = new Uint8Array(analyser.frequencyBinCount);
@@ -175,16 +193,16 @@ function DigiTest(anchorName) {
         
         function startStream(stream) {
         
-            var inputNode = actx.createGain();
-            inputNode.gain.value=1.0;
-
-            var audioInput = actx.createMediaStreamSource(stream);
-            audioInput.connect(inputNode);
-
+            stop();
+        
+            source = actx.createBufferSource();
             analyser = actx.createAnalyser();
             analyser.fftSize = fftSize;
 
-            inputNode.connect(analyser);
+            var audioInput = actx.createMediaStreamSource(stream);
+            audioInput.connect(analyser);
+            isRunning = true;
+
             
             var scriptProcessor = actx.createScriptProcessor(4096, 1 ,0);
             scriptProcessor.onaudioprocess = function(event) {            

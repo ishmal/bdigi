@@ -428,11 +428,11 @@ object Resampler
                 d4 = buf(2)
                 d5 = buf(3)
                 d6 = buf(4)
-                val sum = d0 * c0500 + d1 * c0505 + d2 * c0510 +
+                val sum = /*d0 * c0500 + */d1 * c0505 + d2 * c0510 +
                           d1 * c0501 + d2 * c0506 + d3 * c0511 +
                           d2 * c0502 + d3 * c0507 + d4 * c0512 +
                           d3 * c0503 + d4 * c0508 + d5 * c0513 +
-                          d4 * c0504 + d5 * c0509 + d6 * c0514
+                          d4 * c0504 + d5 * c0509/* + d6 * c0514*/
                 f(sum)
                 }
         }
@@ -440,11 +440,11 @@ object Resampler
         def interpolate(v: Double)(f: Double => Unit) =
         {
             d0 = d1 ; d1 = d2 ; d2 = v
-            f(d0 * c0500 + d1 * c0505 + d2 * c0510)
+            f(/*d0 * c0500*/ + d1 * c0505 + d2 * c0510)
             f(d0 * c0501 + d1 * c0506 + d2 * c0511)
             f(d0 * c0502 + d1 * c0507 + d2 * c0512)
             f(d0 * c0503 + d1 * c0508 + d2 * c0513)
-            f(d0 * c0504 + d1 * c0509 + d2 * c0514)
+            f(d0 * c0504 + d1 * c0509/* + d2 * c0514*/)
         }
     }//Resampler5
         
@@ -465,12 +465,12 @@ object Resampler
                 d5 = buf(3)
                 d6 = buf(4)
                 d7 = buf(5)
-                val sum = d0 * c0600 + d1 * c0606 + d2 * c0612 +
+                val sum = /*d0 * c0600 + */d1 * c0606 + d2 * c0612 +
                           d1 * c0601 + d2 * c0607 + d3 * c0613 +
                           d2 * c0602 + d3 * c0608 + d4 * c0614 +
                           d3 * c0603 + d4 * c0609 + d5 * c0615 +
                           d4 * c0604 + d5 * c0610 + d6 * c0616 +
-                          d5 * c0605 + d6 * c0611 + d7 * c0617
+                          d5 * c0605 + d6 * c0611/* + d7 * c0617*/
                 f(sum)
                 }
         }
@@ -478,12 +478,12 @@ object Resampler
         def interpolate(v: Double)(f: Double => Unit) =
         {
             d0 = d1 ; d1 = d2 ; d2 = v
-            f(d0 * c0600 + d1 * c0606 + d2 * c0612)
+            f(/*d0 * c0600 + */d1 * c0606 + d2 * c0612)
             f(d0 * c0601 + d1 * c0607 + d2 * c0613)
             f(d0 * c0602 + d1 * c0608 + d2 * c0614)
             f(d0 * c0603 + d1 * c0609 + d2 * c0615)
             f(d0 * c0604 + d1 * c0610 + d2 * c0616)
-            f(d0 * c0605 + d1 * c0611 + d2 * c0617)
+            f(d0 * c0605 + d1 * c0611/* + d2 * c0617*/)
         }
     }//Resampler6
         
@@ -684,7 +684,7 @@ object ResamplerX
         def interpolate(v: Complex)(f: Complex => Unit) = f(v)
     }//Resampler1
         
-     class Resampler2 extends Resampler(2)
+    class Resampler2 extends Resampler(2)
     {
         def decimate(v: Complex)(f: Complex => Unit) =
         {
@@ -827,12 +827,12 @@ object ResamplerX
                 d5 = buf(3)
                 d6 = buf(4)
                 d7 = buf(5)
-                val sum = d0 * c0600 + d1 * c0606 + d2 * c0612 +
+                val sum = /*d0 * c0600 + */d1 * c0606 + d2 * c0612 +
                           d1 * c0601 + d2 * c0607 + d3 * c0613 +
                           d2 * c0602 + d3 * c0608 + d4 * c0614 +
                           d3 * c0603 + d4 * c0609 + d5 * c0615 +
                           d4 * c0604 + d5 * c0610 + d6 * c0616 +
-                          d5 * c0605 + d6 * c0611 + d7 * c0617
+                          d5 * c0605 + d6 * c0611/* + d7 * c0617*/
                 f(sum)
                 }
         }
@@ -840,12 +840,12 @@ object ResamplerX
         def interpolate(v: Complex)(f: Complex => Unit) =
         {
             d0 = d1 ; d1 = d2 ; d2 = v
-            f(d0 * c0600 + d1 * c0606 + d2 * c0612)
+            f(/*d0 * c0600 + */d1 * c0606 + d2 * c0612)
             f(d0 * c0601 + d1 * c0607 + d2 * c0613)
             f(d0 * c0602 + d1 * c0608 + d2 * c0614)
             f(d0 * c0603 + d1 * c0609 + d2 * c0615)
             f(d0 * c0604 + d1 * c0610 + d2 * c0616)
-            f(d0 * c0605 + d1 * c0611 + d2 * c0617)
+            f(d0 * c0605 + d1 * c0611/* + d2 * c0617*/)
         }
     }//Resampler6
         
@@ -867,13 +867,13 @@ object ResamplerX
                 d6 = buf(4)
                 d7 = buf(5)
                 d8 = buf(6)
-                val sum = d0 * c0700 + d1 * c0707 + d2 * c0714 +
+                val sum = /*d0 * c0700 + */d1 * c0707 + d2 * c0714 +
                           d1 * c0701 + d2 * c0708 + d3 * c0715 +
                           d2 * c0702 + d3 * c0709 + d4 * c0716 +
                           d3 * c0703 + d4 * c0710 + d5 * c0717 +
                           d4 * c0704 + d5 * c0711 + d6 * c0718 +
                           d5 * c0705 + d6 * c0712 + d7 * c0719 +
-                          d6 * c0706 + d7 * c0713 + d8 * c0720
+                          d6 * c0706 + d7 * c0713/* + d8 * c0720*/
                 f(sum)
                 }
         }
@@ -881,13 +881,13 @@ object ResamplerX
         def interpolate(v: Complex)(f: Complex => Unit) =
         {
             d0 = d1 ; d1 = d2 ; d2 = v
-            f(d0 * c0700 + d1 * c0707 + d2 * c0714)
+            f(/*d0 * c0700 + */d1 * c0707 + d2 * c0714)
             f(d0 * c0701 + d1 * c0708 + d2 * c0715)
             f(d0 * c0702 + d1 * c0709 + d2 * c0716)
             f(d0 * c0703 + d1 * c0710 + d2 * c0717)
             f(d0 * c0704 + d1 * c0711 + d2 * c0718)
             f(d0 * c0705 + d1 * c0712 + d2 * c0719)
-            f(d0 * c0706 + d1 * c0713 + d2 * c0720)
+            f(d0 * c0706 + d1 * c0713/* + d2 * c0720*/)
         }
     }//Resampler7
     
