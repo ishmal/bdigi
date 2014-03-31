@@ -96,8 +96,8 @@ class Mode(var par: App, val sampleRateHint: Double)
     private val decimator    = ResamplerX(decimation)
     private val interpolator = ResamplerX(decimation)
     
-    trace("requested fs:" + sampleRateHint + "  decimation: " +
-        decimation + "   sampleRate:" + sampleRate)
+    //trace("requested fs:" + sampleRateHint + "  decimation: " +
+    //    decimation + "   sampleRate:" + sampleRate)
     
     
     def receive(iv: Double)
