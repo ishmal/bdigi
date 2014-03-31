@@ -37,7 +37,7 @@ class WaterfallFactory(par: App, N: Int, sampleRate: Double, maxFreq: Double)
     private val frame = Array.fill(N)(0.0)
     private val bins = (maxFreq / sampleRate * N).toInt
     par.trace("wf samplerate: " + sampleRate + "  bins:" + bins)
-    private val window = Window.Hamming(N)
+    private val window = Window.Hann(N)
 
     private val length = 5
     private val wf = Array.ofDim[Int](length, bins)
