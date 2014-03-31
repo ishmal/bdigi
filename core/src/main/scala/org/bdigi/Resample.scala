@@ -38,10 +38,10 @@ trait FirResamplerComplexOutput
 }
 
 /**
- * Let's use some of the tricks for a low-pass filter, but tailor it explicitly
- * This is a polyphase resampler, either for interpolating or decimating.
+ * This implementation is for arbitrary decimations and interpolations.
+ * We will probably not use this one, but rather the hardcoded one below.
  */
-class FirResampler(decimation: Int)
+class PolyphaseResampler(decimation: Int)
 {
     private val size     = 3
     private val minus1   = size-1
@@ -64,7 +64,9 @@ class FirResampler(decimation: Int)
             else 
                 math.sin(omega * i) / (math.Pi * i)
             //Hamming window
-            val window = 0.54 - 0.46 * math.cos(twopi * idx / (size-1))
+            //val window = 0.54 - 0.46 * math.cos(twopi * idx / (size-1))
+            //Hann window
+            val window = 0.5 - 0.5 * math.cos(twopi * idx / (size-1))
             fir * window
             })
         xs
@@ -173,98 +175,6 @@ class FirResampler(decimation: Int)
 }//Resampler
 
 
-/**
- * Hardcoded experiment
- */
-class Resampler6
-{
-    
-    private val c00= -0.00282942
-    private val c01= -0.00382701
-    private val c02= -0.00454856
-    private val c03= 2.17622e-18
-    private val c04= 0.0158377
-    private val c05= 0.0458902
-    private val c06= 0.0867089
-    private val c07= 0.128336
-    private val c08= 0.157908
-    private val c09= 0.165361
-    private val c10= 0.148189
-    private val c11= 0.112638
-    private val c12= 0.0706526
-    private val c13= 0.0342897
-    private val c14= 0.0106621
-    private val c15= 1.29975e-18
-    private val c16= -0.00252517
-    private val c17= -0.00275664
-
-    trait Phase
-    {
-        def apply(v: Double)(f: Double => Unit)
-        var next : Phase = this
-    }
-
-    private var d0 = 0.0
-    private var d1 = 0.0
-    private var d2 = 0.0
-    private var sum = 0.0
-
-    private val dec0 = new Phase {
-        def apply(v: Double)(f: Double => Unit) =        
-            sum = d0 * c00 + d1 * c06 + d2 * c12
-    }
-    private val dec1 = new Phase {
-        def apply(v: Double)(f: Double => Unit) =
-            sum += d0 * c01 + d1 * c07 + d2 * c13
-    }
-    private val dec2 = new Phase {
-        def apply(v: Double)(f: Double => Unit) =
-            sum += d0 * c02 + d1 * c08 + d2 * c14
-    }
-    private val dec3 = new Phase {
-        def apply(v: Double)(f: Double => Unit) =
-            sum += d0 * c03 + d1 * c09 + d2 * c15
-    }
-    private val dec4 = new Phase {
-        def apply(v: Double)(f: Double => Unit) =
-            sum += d0 * c04 + d1 * c10 + d2 * c16
-    }
-    private val dec5 = new Phase {
-        def apply(v: Double)(f: Double => Unit) =
-            f(d0 * c05 + d1 * c11 + d2 * c17)
-    }
-
-    dec0.next = dec1
-    dec1.next = dec2
-    dec2.next = dec3
-    dec3.next = dec4
-    dec4.next = dec5
-    dec5.next = dec0
-
-    private var dec : Phase = dec0
-
-
-    def decimate(v: Double)(f: Double => Unit) =
-    {
-        d0 = d1 ; d1 = d2 ; d2 = v
-        dec(v)(f)
-        dec = dec.next
-    }
-
-
-    def interpolate(v: Double)(f: Double => Unit) =
-    {
-        d0 = d1 ; d1 = d2 ; d2 = v
-        f(d0 * c00 + d1 * c06 + d2 * c12)
-        f(d0 * c01 + d1 * c07 + d2 * c13)
-        f(d0 * c02 + d1 * c08 + d2 * c14)
-        f(d0 * c03 + d1 * c09 + d2 * c15)
-        f(d0 * c04 + d1 * c10 + d2 * c16)
-        f(d0 * c05 + d1 * c11 + d2 * c17)
-    }
-
-
-}
 
 
 /**
