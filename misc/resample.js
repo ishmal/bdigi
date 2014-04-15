@@ -300,13 +300,13 @@ function Resampler(decimation) {
 
     
     switch (decimation) {
-        case 1 : this.decimate = decimate1 ; this.interpolate = interpolate1; break;
-        case 2 : this.decimate = decimate2 ; this.interpolate = interpolate2; break;
-        case 3 : this.decimate = decimate3 ; this.interpolate = interpolate3; break;
-        case 4 : this.decimate = decimate4 ; this.interpolate = interpolate4; break;
-        case 5 : this.decimate = decimate5 ; this.interpolate = interpolate5; break;
-        case 6 : this.decimate = decimate6 ; this.interpolate = interpolate6; break;
-        case 7 : this.decimate = decimate7 ; this.interpolate = interpolate7; break;
+        case 1 : this.decimate = decimate1; this.interpolate = interpolate1; break;
+        case 2 : this.decimate = decimate2; this.interpolate = interpolate2; break;
+        case 3 : this.decimate = decimate3; this.interpolate = interpolate3; break;
+        case 4 : this.decimate = decimate4; this.interpolate = interpolate4; break;
+        case 5 : this.decimate = decimate5; this.interpolate = interpolate5; break;
+        case 6 : this.decimate = decimate6; this.interpolate = interpolate6; break;
+        case 7 : this.decimate = decimate7; this.interpolate = interpolate7; break;
         default:  throw new IllegalArgumentException("Decimation " + decimation + " not supported");
         }
 }
