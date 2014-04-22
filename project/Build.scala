@@ -10,7 +10,7 @@ object MyBuild extends Build {
     
         organization := "org.bdigi",
         version := "1.6",
-        scalaVersion := "2.10.3",
+        scalaVersion := "2.11.0",
         scalacOptions ++= Seq("-deprecation","-feature")
     )
     
