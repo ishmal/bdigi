@@ -338,7 +338,7 @@ class Psk31(par: App) extends Mode(par, 1200.0)
     //####################################################
     //# S E T T I N G S
     //####################################################
-    rate       = 31.25
+    rate = 31.25
     
     override val name = "psk"
     override val tooltip = "Phase shift keying"
@@ -364,25 +364,16 @@ class Psk31(par: App) extends Mode(par, 1200.0)
     
     
     trace("sampleRate: " + sampleRate + "  samplesPerSymbol: " + samplesPerSymbol)
-
-    
-    //var dataFilter = Fir.raisedCosine(samplesPerSymbol.toInt * 4 + 1, 0.35, rate, sampleRate)
-    def mkDataFilter = Fir.rootRaisedCosine(13, 0.35, rate * 0.25, sampleRate)
-    def mkBpf        = Fir.bandPass(13, -0.7*rate, 0.7*rate, sampleRate)
-    def mkTimer      = new EarlyLate(samplesPerSymbol)
-
-    var dataFilter = mkDataFilter
-    var bpf        = mkBpf
-    var timer      = mkTimer
+    def mkLpf        = Fir.lowPass(13, 0.7*rate, sampleRate)
+    var lpf        = mkLpf
     
     var useCostas = false
     
     override def rateChanged(v: Double) =
         {
         phaseTransitions = makeTransitions
-        dataFilter = mkDataFilter
-        bpf        = mkBpf
-        timer      = mkTimer
+        lpf        = mkLpf
+        halfSym    = samplesPerSymbol / 2
         }
 
     //####################################################
@@ -390,13 +381,26 @@ class Psk31(par: App) extends Mode(par, 1200.0)
     //####################################################
 
 
-    override def update(isample: Complex) : Double =
+   
+    private var lastSign = -1
+    private var symCounter = 0
+    private var halfSym = samplesPerSymbol / 2
+    
+    override def update(sample: Complex) : Double =
         {
-        val sample = bpf.update(isample)
-        val z = dataFilter.update(sample)
-        par.updateScope(z.r, z.i)
+        val z = lpf.update(sample)
+        var i = z.r
+        val q = z.i
+        par.updateScope(i, q)
+        var sign = if (i>0) 1 else -1
         //var zscope = z * 2.0;
-        timer.update(z)(processSymbol)
+        if (sign != lastSign)
+            symCounter = 0
+        else
+            symCounter += 1
+        lastSign = sign
+        if ((symCounter % samplesPerSymbol) == halfSym)
+            processSymbol(z)
         z.r
         }
     

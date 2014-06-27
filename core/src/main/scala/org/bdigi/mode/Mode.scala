@@ -40,7 +40,6 @@ class Mode(var par: App, val sampleRateHint: Double)
 {
     def this(par: App) = this(par, par.sampleRate)
     
-    
     def error(msg: String) = par.error(msg)
 
     def trace(msg: String) = par.trace(msg)
@@ -148,10 +147,11 @@ class Mode(var par: App, val sampleRateHint: Double)
      * by an implementation for any specific processing.  This is
      * used a lot for filters
      */                   
-    def rate_=(newrate: Double) =
+    def rate_=(v: Double) =
         {
-        rateInHertz = newrate
-        rateChanged(newrate)
+        rateInHertz = v
+        _sampSym = (sampleRate / v).toInt
+        rateChanged(v)
         }
         
     /**
@@ -163,9 +163,9 @@ class Mode(var par: App, val sampleRateHint: Double)
     /**
      * This is used for modulation and demodulation, and timing
      * and decoding.  Make sure sampleRate > rate!!
-     */              
-    def samplesPerSymbol =
-        sampleRate / rateInHertz
+     */
+    private var _sampSym = 0        
+    def samplesPerSymbol = _sampSym
         
         
  

@@ -100,13 +100,11 @@ object MathUtil
 	    }
 
     val twopi = math.Pi * 2.0
-    private val tabBits = 16
-    private val tabMask = ~(-1 << tabBits)
-    private val tabSize = tabMask + 1
-    private val tabFreq = twopi / tabSize
-    private val tabRate = 1.0 / tabFreq
-    private val cossinTab = Array.tabulate(tabSize)(i=>
-         (math.cos(tabFreq*(0.5+i)), math.sin(tabFreq*(0.5+i)) ))
+    private val tabMask = 0xffff;
+    private val tabOmega = twopi / 65536.0
+    private val tabRate = 1.0 / tabOmega
+    private val cossinTab = Array.tabulate(65536)(i=>
+         (math.cos(tabOmega*(0.5+i)), math.sin(tabOmega*(0.5+i)) ))
          
     
     /**
