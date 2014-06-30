@@ -26,16 +26,6 @@
 package org.bdigi
 
 
-//Callbacks for java clients
-trait FirResamplerOutput
-{
-    def apply(v: Double)
-}
-
-trait FirResamplerComplexOutput
-{
-    def apply(v: Complex)
-}
 
 /**
  * This implementation is for arbitrary decimations and interpolations.

@@ -37,7 +37,7 @@ class ResampleTest extends FeatureSpec with Matchers
 
         scenario("Proper scaling")
             {
-            val resampler = new FirResampler(5)
+            val resampler = new PolyphaseResampler(5)
             val sample = 5.0
             for (i <- 0 until 100) //preload
                 resampler.decimate(sample) (v=>{})
@@ -59,7 +59,7 @@ class ResampleTest extends FeatureSpec with Matchers
 
         scenario("Proper scaling")
             {
-            val resampler = new FirResampler(6)
+            val resampler = new PolyphaseResampler(6)
             val sample = 5.0
             for (i <- 0 until 100) //preload
                 resampler.interpolate(sample) (v=>{})

@@ -564,6 +564,227 @@ object SlidingDht
 
 
 
+/**
+ * Finally got split radix to work!
+ */
+class FFTSR(N: Int) {
+
+
+    private val power = (math.log(N) / math.log(2)).toInt
+    private val N2 = N >> 1
+
+    private val bitReversedIndices = Array.tabulate(N) ({ i =>
+	   var np = N
+	   var index = i
+	   var bitreversed = 0
+	   while (np > 1) 
+	       {
+		   bitreversed <<= 1
+		   bitreversed += index & 1
+		   index >>= 1
+		   np >>= 1
+		   }
+		  bitreversed
+	    })
+
+    case class Step(wr1: Double, wi1: Double, wr3: Double, wi3: Double)
+
+    //let's pre-generate anything we can
+    val stages = 
+        {
+        var xs = scala.collection.mutable.ListBuffer[Array[Step]]()
+        var n2 = N  // == n>>(k-1) == n, n/2, n/4, ..., 4
+        var n4 = n2>>2; // == n/4, n/8, ..., 1
+        for (k <- 1 until power) {
+            var stage = scala.collection.mutable.ListBuffer[Step]()
+            val e = 2.0 * math.Pi / n2
+            for (j <- 1 until n4) {
+                val a = j * e
+                stage += Step(math.cos(a), math.sin(a), math.cos(3.0*a), math.sin(3.0*a))
+                }
+            xs += stage.toArray
+            n2>>=1
+            n4>>=1
+            }
+        xs.toArray
+        }
+ 
+
+    //val W = Window.Hann(N);
+    
+
+    val xr = Array.ofDim[Double](N);
+    val xi = Array.ofDim[Double](N);
+    
+    
+    def apply(input : Array[Double]) = {
+        var ix=0
+        var id=0
+        var i0=0
+        var i1=0
+        var i2=0
+        var i3=0
+        var tr=0.0
+        var ti=0.0
+        var tr0=0.0
+        var ti0=0.0
+        var tr1=0.0
+        var ti1=0.0
+ 
+
+        for (idx <- 0 until N) {
+            xr(idx) = input(idx) // * W[idx];
+            xi(idx) = 0;
+        }
+
+        var stageidx = 0
+
+        var n2 = N        // == n>>(k-1) == n, n/2, n/4, ..., 4
+        var n4 = n2>>2    // == n/4, n/8, ..., 1
+        for (k <- 1 until power) {
+
+          val stage = stages(stageidx)
+          stageidx += 1
+
+          var id = (n2 << 1)
+          ix = 0
+          while (ix < N) {
+            //ix=j=0
+            for (i0 <- ix until N by id) {
+              i1 = i0 + n4
+              i2 = i1 + n4
+              i3 = i2 + n4
+
+              //sumdiff3(x(i0), x(i2), t0)
+              tr0 = xr(i0) - xr(i2)
+              ti0 = xi(i0) - xi(i2)
+              xr(i0) += xr(i2)
+              xi(i0) += xi(i2)
+              //sumdiff3(x(i1), x(i3), t1)
+              tr1 = xr(i1) - xr(i3)
+              ti1 = xi(i1) - xi(i3)
+              xr(i1) += xr(i3)
+              xi(i1) += xi(i3)
+
+              // t1 *= Complex(0, 1);  // +isign
+              tr = tr1
+              tr1 = -ti1
+              ti1 = tr
+
+              //sumdiff(t0, t1)
+              tr = tr1 - tr0
+              ti = ti1 - ti0
+              tr0 += tr1
+              ti0 += ti1
+              tr1 = tr
+              ti1 = ti
+
+              xr(i2) = tr0 // .mul(w1);
+              xi(i2) = ti0 // .mul(w1);
+              xr(i3) = tr1 // .mul(w3);
+              xi(i3) = ti1 // .mul(w3);
+              n2 >>= 1
+              n4 >>= 1
+            }
+          ix = (id << 1) - n2
+          id <<= 2
+          }
+
+
+        var dataindex = 0
+
+        for (j <- 1 until n4) {
+
+            var data = stage(dataindex)
+            dataindex += 1
+            var wr1 = data.wr1
+            var wi1 = data.wi1
+            var wr3 = data.wr3
+            var wi3 = data.wi3
+
+            id = (n2<<1)
+            ix = j
+            while (ix<N) {
+                for (i0 <- ix until N by id) {
+                    i1 = i0 + n4
+                    i2 = i1 + n4
+                    i3 = i2 + n4
+
+                    //sumdiff3(x(i0), x(i2), t0)
+                    tr0 = xr(i0) - xr(i2)
+                    ti0 = xi(i0) - xi(i2)
+                    xr(i0) += xr(i2)
+                    xi(i0) += xi(i2)
+                    //sumdiff3(x(i1), x(i3), t1)
+                    tr1 = xr(i1) - xr(i3)
+                    ti1 = xi(i1) - xi(i3)
+                    xr(i1) += xr(i3)
+                    xi(i1) += xi(i3)
+
+                    // t1 *= Complex(0, 1);  // +isign
+                    tr = tr1
+                    tr1 = -ti1
+                    ti1 = tr
+
+                    //sumdiff(t0, t1)
+                    tr  = tr1 - tr0
+                    ti  = ti1 - ti0
+                    tr0 += tr1
+                    ti0 += ti1
+                    tr1 = tr
+                    ti1 = ti
+
+                    xr(i2) = tr0*wr1 - ti0*wi1  // .mul(w1);
+                    xi(i2) = ti0*wr1 + tr0*wi1  // .mul(w1);
+                    xr(i3) = tr1*wr3 - ti1*wi3  // .mul(w3);
+                    xi(i3) = ti1*wr3 + tr1*wi3  // .mul(w3);
+                    }
+                ix = (id<<1)-n2+j
+                id <<= 2
+                }
+            }
+        }
+
+        id=4
+        ix=0
+        while (ix < N) {
+            for (i0 <- ix until N by id) {
+                i1 = i0+1
+                tr = xr(i1) - xr(i0)
+                ti = xi(i1) - xi(i0)
+                xr(i0) += xr(i1)
+                xi(i0) += xi(i1)
+                xr(i1) = tr
+                xi(i1) = ti
+            }
+            ix = id + id - 2 //2*(id-1);
+        id <<= 2
+        }
+
+    }//apply
+
+
+    def powerSpectrum(input: Array[Double]) : Array[Double] = {
+
+        apply(input)
+        val len  = N2
+
+        val ps = Array.ofDim[Double](len)
+        for (j <- 0 until len) {
+            val bri = bitReversedIndices(j)
+            val r = xr(bri)
+            val i = xi(bri)
+            ps(j) = r*r + i*i
+        }
+        ps
+    }
+
+
+} //FFTSR
+
+
+
+
 import org.apache.commons.math3.transform.{DftNormalization, FastFourierTransformer, TransformType}
 import org.apache.commons.math3.complex.{Complex => JComplex}
 

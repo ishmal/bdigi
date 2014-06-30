@@ -137,7 +137,7 @@ class Psk31Test extends FeatureSpec with Matchers
                 //info("v: " + v)
                 psk.processSymbol(v)
                 }
-            app.stop
+            //app.stop
             }
         
         scenario("Test 2")
@@ -170,7 +170,7 @@ class Psk31Test extends FeatureSpec with Matchers
                 //info("v: " + v)
                 psk.processSymbol(v)
                 }
-            app.stop
+            //app.stop
             }
 
         }
